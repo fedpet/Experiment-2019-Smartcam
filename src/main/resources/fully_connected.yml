@@ -7,7 +7,7 @@ variables:
     parameters: [1, 1, 20, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["nocomm", "ff_linpro", "ff_nocomm", "zz_linpro", "ff_linpro", "bc_re", "sm_av"]
+    parameters: ["nocomm", "sm_av", "bc_re", "zz_linpro", "ff_nocomm", "ff_linpro"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
@@ -21,14 +21,14 @@ variables:
     parameters: [0.2] #potential targets per square meter
   HumansCamerasRatio: &HumansCamerasRatio
     type: ListOf
-    parameters: [2, 1, 0.5]
+    parameters: [1, 0.5, 0.25, 0.1]
   NumHumans: &NumHumans
     formula: EnvironmentSize * HumanDensity
   NumCameras: &NumCameras
     formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
-    type: ListOf
-    parameters: [1000, 400, 100]
+    type: ArbitraryVariable
+    parameters: [500]
   HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
     formula: EnvironmentSize / 2
   NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations

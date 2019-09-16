@@ -18,7 +18,7 @@ variables:
     parameters: [1.4]
   HumanDensity: &HumanDensity
     type: ArbitraryVariable
-    parameters: [1] #potential targets per square meter
+    parameters: [0.2] #potential targets per square meter
   HumansCamerasRatio: &HumansCamerasRatio
     type: ListOf
     parameters: [1]
@@ -27,8 +27,8 @@ variables:
   NumCameras: &NumCameras
     formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
-    type: ListOf
-    parameters: [400]
+    type: ArbitraryVariable
+    parameters: [500]
   HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
     formula: EnvironmentSize / 2
   NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations
