@@ -4,24 +4,31 @@ variables:
   Seed: &Seed
     type: LinearVariable
     #default, min, max, step
-    parameters: [1, 1, 1, 1]
+    parameters: [1, 1, 30, 1]
+  Algorithm: &Algorithm
+    type: ListOf
+    parameters: ["nocomm", "ff_nocomm", "zz_linpro", "ff_linpro", "bc_re", "sm_av"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
-    type: ArbitraryVariable
-    parameters: [0.5]
+    type: ListOf
+    parameters: [3]
   HumanSpeed: &HumanSpeed
     type: ArbitraryVariable
-    parameters: [0.5]
+    parameters: [1.4]
+  HumanDensity: &HumanDensity
+    type: ArbitraryVariable
+    parameters: [0.3e-3] #potential targets per square meter
+  HumansCamerasRatio: &HumansCamerasRatio
+    type: ListOf
+    parameters: [*MaxCamerasPerTarget, 1, 0.5, 0.25]
   NumHumans: &NumHumans
-    type: ArbitraryVariable
-    parameters: [40]
+    formula: HumanDensity * (EnvironmentSize**2)
   NumCameras: &NumCameras
-    type: ArbitraryVariable
-    parameters: [10]
+    formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
-    type: ArbitraryVariable
-    parameters: [400.0]
+    type: ListOf
+    parameters: [1000, 400, 100]
   HalfEnvironmentSize: &HalfEnvironmentSize
     formula: EnvironmentSize / 2
   NetworkConnectionMaxDistance: &NetworkConnectionMaxDistance
@@ -32,21 +39,24 @@ variables:
   FoVDistance: &FoVDistance
     type: ArbitraryVariable
     parameters: [30]
-  MaxDistanceBeforeChangeInDirection: &MaxDistanceBeforeChangeInDirection
+  RotationSpeed: &RotationSpeed
     type: ArbitraryVariable
-    parameters: [.inf]
-  AngularSpeed: &AngularSpeed
+    parameters: [36]
+  WantedProbability: &WantedProbability
     type: ArbitraryVariable
-    parameters: [2]
+    parameters: [0.02]
+  WantedTimeDistribution: &WantedTimeDistribution # how many times per second the dice is rolled
+    type: ArbitraryVariable
+    parameters: [0.02]
 
 
 environment:
   type: Rectangular2DEnvironment
   parameters: [*EnvironmentSize, *EnvironmentSize]
 
-network-model:
-  type: ConnectWithinDistance
-  parameters: [*NetworkConnectionMaxDistance]
+#network-model:
+#  type: ConnectWithinDistance
+#  parameters: [*NetworkConnectionMaxDistance]
 
 seeds:
   scenario: *Seed
@@ -56,6 +66,8 @@ export:
   - time
   - type: CamerasKCoverage
     parameters: [vision, wanted, *MaxCamerasPerTarget]
+  - type: LogProgress
+    parameters: [vision, wanted]
   - type: DistanceTraveled
     parameters: [vision]
 
@@ -66,39 +78,39 @@ programs:
       actions:
         - type: LevyWalk
           parameters: [*HumanSpeed]
-    - time-distribution: 0.02
+    - time-distribution: *WantedTimeDistribution
       type: ChemicalReaction
       actions:
         - type: RandomlyToggleMolecule
-          parameters: [wanted, true, 0.01]
+          parameters: [wanted, true, *WantedProbability]
   - &Camera
-    - time-distribution: 4
+    - time-distribution: 2
       type: ChemicalReaction
       actions:
         - type: See
           parameters: [*FoVDistance, *FoVAngle, vision]
+        - type: HeadTowardTarget
+          parameters: [heading, *RotationSpeed]
+        - type: MoveToTarget
+          parameters: [destination, *CameraSpeed]
     - time-distribution: 2
       type: ChemicalReaction
       conditions:
         - type: MoleculeHasConcentration
-          parameters: [state, following]
+          parameters: [doZigZag, true]
       actions:
-        - type: HeadTowardTarget
-          parameters: [heading, *AngularSpeed]
-        - type: MoveToTarget
-          parameters: [destination, *CameraSpeed]
-    - time-distribution: 1
+        - type: ZigZagMove2
+          parameters: [.inf, *CameraSpeed]
+    - time-distribution: 2
       type: ChemicalReaction
       conditions:
         - type: MoleculeHasConcentration
-          parameters: [state, exploring]
+          parameters: [doSpin, true]
       actions:
         - type: Spin
-          parameters: [*AngularSpeed]
-        - type: LevyWalk
-          parameters: [*CameraSpeed]
+          parameters: [*RotationSpeed]
     - time-distribution: 1
-      program: simplex
+      program: *Algorithm
     - program: send
 
 
@@ -128,8 +140,8 @@ displacements:
         concentration: *EnvironmentSize
       - molecule: MaxMovementSpeed
         concentration: *CameraSpeed
-      - molecule: MaxAngularSpeed
-        concentration: *AngularSpeed
+      - molecule: MaxRotationSpeed
+        concentration: *RotationSpeed
     programs:
       - *Camera
 
