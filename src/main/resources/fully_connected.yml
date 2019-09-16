@@ -28,7 +28,7 @@ variables:
     formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
     type: ListOf
-    parameters: [400, 400, 100]
+    parameters: [1000, 400, 100]
   HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
     formula: EnvironmentSize / 2
   NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations

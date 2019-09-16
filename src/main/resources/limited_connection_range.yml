@@ -18,7 +18,7 @@ variables:
     parameters: [1.4]
   HumanDensity: &HumanDensity
     type: ArbitraryVariable
-    parameters: [0.2] #potential targets per square meter
+    parameters: [1] #potential targets per square meter
   HumansCamerasRatio: &HumansCamerasRatio
     type: ListOf
     parameters: [1]
