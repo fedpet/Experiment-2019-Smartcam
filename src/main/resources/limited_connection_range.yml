@@ -47,10 +47,10 @@ variables:
     parameters: [36]
   WantedProbability: &WantedProbability
     type: ArbitraryVariable
-    parameters: [0.04]
+    parameters: [0.05]
   WantedTimeDistribution: &WantedTimeDistribution # how many times per second the dice is rolled
     type: ArbitraryVariable
-    parameters: [0.04]
+    parameters: [0.05]
 
 environment:
   type: Rectangular2DEnvironment
@@ -123,7 +123,7 @@ displacements:
       parameters: [*NumHumans, *NegHalfEnvironmentSize, *NegHalfEnvironmentSize, *EnvironmentSize, *EnvironmentSize]
     nodes:
       type: CircleNode
-      parameters: [1]
+      parameters: [0.5]
     programs:
       - *Human
   - in:

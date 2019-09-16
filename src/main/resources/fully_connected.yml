@@ -4,10 +4,10 @@ variables:
   Seed: &Seed
     type: LinearVariable
     #default, min, max, step
-    parameters: [1, 1, 30, 1]
+    parameters: [1, 1, 20, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["nocomm", "ff_nocomm", "zz_linpro", "ff_linpro", "bc_re", "sm_av"]
+    parameters: ["ff_linpro", "ff_nocomm", "zz_linpro", "ff_linpro", "bc_re", "sm_av"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
@@ -21,14 +21,14 @@ variables:
     parameters: [0.2] #potential targets per square meter
   HumansCamerasRatio: &HumansCamerasRatio
     type: ListOf
-    parameters: [3, 1, 0.3]
+    parameters: [2, 1, 0.5]
   NumHumans: &NumHumans
     formula: EnvironmentSize * HumanDensity
   NumCameras: &NumCameras
     formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
     type: ListOf
-    parameters: [1000, 400, 100]
+    parameters: [400, 400, 100]
   HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
     formula: EnvironmentSize / 2
   NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations
@@ -46,10 +46,10 @@ variables:
     parameters: [36]
   WantedProbability: &WantedProbability
     type: ArbitraryVariable
-    parameters: [0.04]
+    parameters: [0.05]
   WantedTimeDistribution: &WantedTimeDistribution # how many times per second the dice is rolled
     type: ArbitraryVariable
-    parameters: [0.04]
+    parameters: [0.05]
 
 environment:
   type: Rectangular2DEnvironment
@@ -124,7 +124,7 @@ displacements:
       parameters: [*NumHumans, *NegHalfEnvironmentSize, *NegHalfEnvironmentSize, *EnvironmentSize, *EnvironmentSize]
     nodes:
       type: CircleNode
-      parameters: [1]
+      parameters: [0.5]
     programs:
       - *Human
   - in:

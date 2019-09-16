@@ -68,7 +68,7 @@ fun makeTest(
     val threadCount = threads ?: maxOf(1, minOf(Runtime.getRuntime().availableProcessors(), heap.toInt() / taskSize ))
     println("Running on $threadCount threads")
     task<JavaExec>(name) {
-        dependsOn("build")
+        //dependsOn("build")
         if (System.getProperty("os.name").toLowerCase().contains("windows")) {
             // pass classpath in environment's variable to avoid errors such as "command line too long"
             environment("CLASSPATH", sourceSets["main"].runtimeClasspath.asPath)
@@ -108,6 +108,6 @@ fun makeTest(
 
 
 makeTest("fully_connected", name="launchGUI")
-makeTest("fully_connected", time = 3600.0 * 2, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio", "EnvironmentSize"))
-makeTest("limited_connection_range", time = 3600.0 * 2, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
+makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio", "EnvironmentSize"))
+makeTest("limited_connection_range", time = 2000.0, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
 defaultTasks("allSimulations")
