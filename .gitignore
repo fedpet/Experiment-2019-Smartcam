@@ -12,3 +12,4 @@ data_summary_mean
 data_summary_std
 timeprocessed
 *.pdf
+data/
