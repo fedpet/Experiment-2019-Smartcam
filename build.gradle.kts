@@ -108,6 +108,6 @@ fun makeTest(
 
 
 makeTest("fully_connected", name="launchGUI")
-makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio", "EnvironmentSize"))
+makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio"))
 makeTest("limited_connection_range", time = 2000.0, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
 defaultTasks("allSimulations")
