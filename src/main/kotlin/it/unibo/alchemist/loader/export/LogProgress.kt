@@ -21,13 +21,13 @@ class LogProgress<P : Position<P>>(
         private const val PRINT_EACH_MILLISECONDS = 10000.0
     }
 
-    private var printed = false
     private var lastPrintTime = System.currentTimeMillis()
+    private var lastEnvironment : Environment<*,*>? = null
 
     override fun extractData(environment: Environment<*, *>, r: Reaction<*>?, time: Time?, step: Long): DoubleArray {
         @Suppress("UNCHECKED_CAST") val env = environment as Environment<*, P>
         require(env is HasBoundaries)
-        if (!printed) {
+        if (lastEnvironment != environment) {
             val nodes = env.nodes
             var width = 0.0
             var height = 0.0
@@ -43,7 +43,8 @@ class LogProgress<P : Position<P>>(
             println()
             println("EnvSize=$width x $height, Objects=$numObjects, Cameras=$numCameras, Ratio=${numCameras / max(1, numObjects)}")
             println()
-            printed = true
+            lastEnvironment = environment
+            lastPrintTime = System.currentTimeMillis()
         }
         val nowTime = System.currentTimeMillis()
         if(!environment.simulation.finalTime.isInfinite && nowTime - lastPrintTime > PRINT_EACH_MILLISECONDS){
