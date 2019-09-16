@@ -1,0 +1,14 @@
+.idea/
+.gradle/
+bin/
+.settings/
+.classpath
+.project
+build/
+out/
+testadata.txt
+testdata.txt
+data_summary_mean
+data_summary_std
+timeprocessed
+*.pdf

@@ -1,0 +1,130 @@
+module exploration_strategies
+import utils
+import java.lang.Math.toRadians
+import java.lang.Math.cos
+import java.lang.Math.sin
+import java.lang.Math.abs
+import java.lang.Math.max
+import java.lang.Math.PI
+
+
+def getForceOfWill() {
+    getMaxMovementSpeed() * 2
+}
+
+def getRepulsiveForce(distance) {
+    getForceOfWill() * ((getFoVDistance() * 2) ^ 2) / (distance ^ 2)
+}
+
+def getAttractiveForce(distance) {
+    - (getMaxCamerasPerTarget() * getRepulsiveForce(distance) / max(1, distance))
+}
+
+def getEnvironmentBoundaryForce(envPoint) {
+    let myPos = self.getCoordinates()
+    let versor = unitVector(myPos - envPoint)
+    getRepulsiveForce(distanceBetweenPos(myPos, envPoint)) * versor
+    //12000 / distanceBetweenPos(myPos, envPoint) ^ 2 * versor
+}
+
+def getEnvironmentBoundariesForce() {
+    let halfEnvSize = getEnvironmentSize() / 2
+    let myCoords = self.getCoordinates()
+    let myX = myCoords.get(0)
+    let myY = myCoords.get(1)
+    let top = getEnvironmentBoundaryForce([myX, halfEnvSize])
+    let right = getEnvironmentBoundaryForce([halfEnvSize, myY])
+    let bottom = getEnvironmentBoundaryForce([myX, -halfEnvSize])
+    let left = getEnvironmentBoundaryForce([-halfEnvSize, myY])
+    env.put("env.top", top)
+    env.put("env.right", right)
+    env.put("env.bottom", bottom)
+    env.put("env.left", left)
+    top + right + bottom + left
+}
+
+def randomAngle() {
+    2 * PI * self.nextRandomDouble()
+}
+
+def chooseDirection() {
+    rep(info <- [self.getCoordinates(), randomAngle()]) {
+        let lastPos = info.get(0)
+        let myDirectionAngle = info.get(1)
+        let myPos = self.getCoordinates()
+        if(self.nextRandomDouble() < 0){
+            env.putField("BUUUUUUUUUUUG", "BUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUG")
+        }
+
+        let realDirectionOfMovement = myPos - lastPos
+        let realDirectionAngle = directionToAngle(realDirectionOfMovement)
+        env.put("invertedRealDirectionAngle", directionToAngle(lastPos - myPos))
+        env.put("realDirectionAngle", realDirectionAngle)
+        env.put("myDirectionAngle", myDirectionAngle)
+        env.put("lastpoosss", lastPos)
+        env.put("distanceTravlvlvlvl", distanceBetweenPos(myPos, lastPos))
+        myDirectionAngle = if((distanceBetweenPos(myPos, lastPos) < getMaxMovementSpeed() * (2/3)
+            || abs(realDirectionAngle - myDirectionAngle) > toRadians(45))) {
+                randomAngle()
+        } else {
+            myDirectionAngle
+        }
+        [myPos, myDirectionAngle]
+    } yield {
+        angleToVersor(info.get(1))
+    }
+}
+
+public def fieldExploration() {
+    let cameraVersorsField = nbrVersor()
+    //env.putField("LOG_vector", cameraVersorsField)
+
+    let distanceFromCamerasField = self.nbrRange()
+    env.putField("LOG_distanceFromCamerasField", distanceFromCamerasField)
+
+    //let cameraForces = 10000 / distanceFromCamerasField ^ 2 * cameraVersorsField
+    let cameraForces = getRepulsiveForce(distanceFromCamerasField) * cameraVersorsField
+    env.putField("LOG_cameraForces", cameraForces)
+
+    let envBoundariesForce = getEnvironmentBoundariesForce()
+    env.put("LOG_envBoundariesForce", envBoundariesForce)
+    env.put("LOG_cameraSumForces", sumHood(cameraForces))
+
+    let targetForces = unionHood PlusSelf(nbr(getVision())).map {
+        getAttractiveForce(distanceFromTarget(it)) * unitVector(self.getCoordinates() - posToTuple(it.getPosition()))
+    }.reduce([0,0]) { a,b -> a + b }
+
+    env.put("LOG_targetForces", targetForces)
+    let sumOfForces = sumHood(cameraForces) + envBoundariesForce + targetForces
+    env.put("LOG_sumOfForces", sumOfForces)
+
+    rep(myDirectionAngle <- randomAngle()){
+    //let myDirection = chooseDirection()
+    let myDirection = angleToVersor(myDirectionAngle)
+    let myForce = myDirection * getForceOfWill()
+    env.put("LOG_myDirection", myDirection)
+    env.put("LOG_myForce", myForce)
+
+    let destination = self.getCoordinates() + sumOfForces + myForce
+        env.put("newdirectionangle", directionToAngle(destination - self.getCoordinates()))
+
+    let newDirectionAngle = directionToAngle(destination - self.getCoordinates())
+    let augment = getMaxMovementSpeed() * 2 // make sure we try to go at max speed
+    destination = destination + [augment * cos(newDirectionAngle), augment * sin(newDirectionAngle)]
+    env.put("destination", destination)
+    //env.put("heading", destination)
+    envRemove("heading")
+    env.put("doSpin", true)
+    //if(abs(newDirectionAngle - myDirectionAngle) >
+    newDirectionAngle
+    }
+}
+
+
+public def zigZagExploration() {
+    envRemove("destination")
+    envRemove("heading")
+    env.put("doSpin", true)
+    env.put("doZigZag", true)
+    noTarget()
+}
