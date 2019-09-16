@@ -100,11 +100,13 @@ fun makeTest(
                     dependsOn(name)
                 }
             }
+        } else {
+            args("-e", name)
         }
     }
 }
 //makeTest("test1", time = 1000.0, vars = setOf("Seed"))
 //makeTest("sm_av", time = 1000.0, vars =
-makeTest("simulation", name="launchGUI")
+makeTest("simulation", name="launchGUI", time = 3600.0)
 makeTest("simulation", time = 3600.0, vars = setOf("Seed", "Algorithm"))
 defaultTasks("launchGUI")

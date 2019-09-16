@@ -1,4 +1,4 @@
-module linpro
+module zz_linpro
 import protelis:lang:utils
 import protelis:coord:spreading
 import protelis:coord:accumulation
