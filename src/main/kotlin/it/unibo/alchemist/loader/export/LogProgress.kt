@@ -1,5 +1,6 @@
 package it.unibo.alchemist.loader.export
 
+import it.unibo.alchemist.loader.variables.ListOf
 import it.unibo.alchemist.model.interfaces.*
 import it.unibo.alchemist.model.interfaces.Time
 import it.unibo.alchemist.model.interfaces.environments.BoundariesVisitor
@@ -40,8 +41,7 @@ class LogProgress<P : Position<P>>(
             val numObjects = nodes.size - numCameras
             println()
             println()
-            println("EnvSize=$width x $height")
-            println("Objects=$numObjects, Cameras=$numCameras, Ratio=${numCameras / max(1, numObjects)}")
+            println("EnvSize=$width x $height, Objects=$numObjects, Cameras=$numCameras, Ratio=${numCameras / max(1, numObjects)}")
             println()
             printed = true
         }
@@ -49,7 +49,7 @@ class LogProgress<P : Position<P>>(
         if(!environment.simulation.finalTime.isInfinite && nowTime - lastPrintTime > PRINT_EACH_MILLISECONDS){
             val simTime = environment.simulation.time.toDouble()
             val end = environment.simulation.finalTime.toDouble()
-            println("%.1f%%".format(simTime / max(0.1, end)))
+            println("%.1f%%".format(simTime / max(0.1, end) * 100))
             lastPrintTime = nowTime
         }
         return EXPORT

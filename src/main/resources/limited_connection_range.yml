@@ -7,7 +7,7 @@ variables:
     parameters: [1, 1, 30, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["nocomm", "ff_nocomm", "zz_linpro", "ff_linpro", "bc_re", "sm_av"]
+    parameters: ["ff_nocomm", "zz_linpro", "ff_linpro", "bc_re", "sm_av"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
@@ -21,20 +21,21 @@ variables:
     parameters: [0.2] #potential targets per square meter
   HumansCamerasRatio: &HumansCamerasRatio
     type: ListOf
-    parameters: [3, 1, 0.3]
+    parameters: [1]
   NumHumans: &NumHumans
     formula: EnvironmentSize * HumanDensity
   NumCameras: &NumCameras
     formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
     type: ListOf
-    parameters: [1000, 400, 100]
+    parameters: [400]
   HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
     formula: EnvironmentSize / 2
   NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations
     formula: -HalfEnvironmentSize
-  NetworkConnectionMaxDistance: &NetworkConnectionMaxDistance
-    formula: EnvironmentSize * EnvironmentSize
+  ConnectionRange: &ConnectionRange
+    type: ListOf
+    parameters: [400, 200, 100, 50]
   FoVAngle: &FoVAngle
     type: ArbitraryVariable
     parameters: [60]
@@ -56,10 +57,8 @@ environment:
   parameters: [*EnvironmentSize, *EnvironmentSize]
 
 network-model:
-  type: FullyConnected
-  parameters: []
-#  type: ConnectWithinDistance
-#  parameters: [*NetworkConnectionMaxDistance]
+  type: ConnectWithinDistance
+  parameters: [*ConnectionRange]
 
 seeds:
   scenario: *Seed

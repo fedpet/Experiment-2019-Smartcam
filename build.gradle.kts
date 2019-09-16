@@ -35,7 +35,7 @@ tasks.withType<KotlinCompile> {
 
 sourceSets.main.get().resources.setSrcDirs(listOf("src/main/resources", "src/main/protelis"))
 
-task("runTests") {
+task("allSimulations") {
     doLast {
         println("Done.")
     }
@@ -96,7 +96,7 @@ fun makeTest(
             args("-var", *vars.toTypedArray())
             args("-e", "data/${name}")
             tasks {
-                "runTests" {
+                "allSimulations" {
                     dependsOn(name)
                 }
             }
@@ -105,8 +105,9 @@ fun makeTest(
         }
     }
 }
-//makeTest("test1", time = 1000.0, vars = setOf("Seed"))
-//makeTest("sm_av", time = 1000.0, vars =
-makeTest("simulation", name="launchGUI", time = 3600.0)
-makeTest("simulation", time = 3600.0, vars = setOf("Seed", "Algorithm"))
-defaultTasks("launchGUI")
+
+
+makeTest("fully_connected", name="launchGUI")
+makeTest("fully_connected", time = 3600.0 * 2, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio", "EnvironmentSize"))
+makeTest("limited_connection_range", time = 3600.0 * 2, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
+defaultTasks("allSimulations")
