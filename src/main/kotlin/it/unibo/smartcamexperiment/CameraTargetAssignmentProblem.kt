@@ -13,6 +13,10 @@ import kotlin.math.floor
 import kotlin.math.min
 
 /**
+ * NOTE: Apache SimplexSolver is extremely slow for big problems. may need to rewrite this using a better implementation
+ * e.g. https://github.com/WinVector/WVLPSolver
+ * AND/OR Let fewer nodes solve it.
+ *
  * Given a list of sources (cameras) and a list of destinations (targets), decides which camera gets which target.
  * @param <S> source type
  * @param <D> destination type

@@ -51,6 +51,7 @@ def mergeDicts(d1, d2):
     for k in d1.keys() | d2.keys():
         res[k] = valueOrEmptySet(k, d1) | valueOrEmptySet(k, d2)
     return res
+
 def is_float(string):
     try:
         float(string)
@@ -138,12 +139,12 @@ if __name__ == '__main__':
     # CONFIGURE SCRIPT
     directory = 'data'
     pickleOutput = 'data_summary'
-    experiments = ['simulation']
+    experiments = ['fully_connected']
     floatPrecision = '{: 0.2f}'
     seedVars = ['Seed']
-    timeSamples = 500
+    timeSamples = 2000
     minTime = 0
-    maxTime = 2000
+    maxTime = 2000.1
     timeColumnName = 'time'
     logarithmicTime = False
     
@@ -157,13 +158,16 @@ if __name__ == '__main__':
         lastTimeProcessed = pickle.load(open('timeprocessed', 'rb'))
     except:
         lastTimeProcessed = -1
-    shouldRecompute = True#newestFileTime != lastTimeProcessed
+    shouldRecompute = newestFileTime != lastTimeProcessed
+    datasets = dict()
     if not shouldRecompute:
         try:
-            means = pickle.load(open(pickleOutput + '_mean', 'rb'))
-            stdevs = pickle.load(open(pickleOutput + '_std', 'rb'))
+            #means = pickle.load(open(pickleOutput + '_mean', 'rb'))
+            #stdevs = pickle.load(open(pickleOutput + '_std', 'rb'))
+            datasets = pickle.load(open(pickleOutput + '_datasets', 'rb'))
         except:
             shouldRecompute = True
+            
     if shouldRecompute:
         timefun = np.logspace if logarithmicTime else np.linspace
         means = {}
@@ -177,7 +181,6 @@ if __name__ == '__main__':
             # From the file name, extract the independent variables
             dimensions = {}
             for file in allfiles:
-                print("coords", extractCoordinates(file))
                 dimensions = mergeDicts(dimensions, extractCoordinates(file))
             dimensions = {k: sorted(v) for k, v in dimensions.items()}
             # Add time to the independent variables
@@ -189,7 +192,6 @@ if __name__ == '__main__':
             for k, v in dimensions.items():
                 dataset.coords[k] = v
             varNames = extractVariableNames(allfiles[0])
-            print("varnames", varNames)
             for v in varNames:
                 if v != timeColumnName:
                     novals = np.ndarray(shape)
@@ -208,10 +210,12 @@ if __name__ == '__main__':
                 minTime = float('inf')
                 for data in allData.values():
                     minTime = min(minTime, data[0, timeColumn])
+            #print(allData)
             timeline = timefun(minTime, maxTime, timeSamples)
             # Resample
             for file in allData:
                 allData[file] = convert(timeColumn, timeline, allData[file])
+                
             # Populate the dataset
             for file, data in allData.items():
                 dataset[timeColumnName] = timeline
@@ -222,11 +226,13 @@ if __name__ == '__main__':
                         darray.loc[experimentVars] = data[:, idx].A1
             #print(dataset)
             # Fold the dataset along the seed variables, producing the mean and stdev datasets
-            means[experiment] = dataset.mean(seedVars)
-            stdevs[experiment] = dataset.std(seedVars)
+            #means[experiment] = dataset.mean(seedVars)
+            #stdevs[experiment] = dataset.std(seedVars)
+            datasets[experiment] = dataset
         # Save the datasets
-        pickle.dump(means, open(pickleOutput + '_mean', 'wb'), protocol=-1)
-        pickle.dump(stdevs, open(pickleOutput + '_std', 'wb'), protocol=-1)
+        #pickle.dump(means, open(pickleOutput + '_mean', 'wb'), protocol=-1)
+        #pickle.dump(stdevs, open(pickleOutput + '_std', 'wb'), protocol=-1)
+        pickle.dump(datasets, open(pickleOutput + '_datasets', 'wb'), protocol=-1)
         pickle.dump(newestFileTime, open('timeprocessed', 'wb'))
 
     # Prepare the charting system
@@ -236,15 +242,76 @@ if __name__ == '__main__':
     figure_size=(6, 6)
     matplotlib.rcParams.update({'axes.titlesize': 14})
     matplotlib.rcParams.update({'axes.labelsize': 13})
-#    colormap = cmx.gist_rainbow
-    colormap = cmx.viridis
-    """
-    def algo(name):
-        d = [d.sel(Algorithm=name).mean().values.tolist() for d in [data['1-coverage'], data['2-coverage'], data['3-coverage']]]
-        chart.add_data_set(d, 'column', name, stack=name)
-    algo('simplex')
-    algo('smav')
-    """
+    
+    kcovColors = ['#00d0ebFF','#61a72cFF','#e30000FF']
+    kcovEcolors = ['#0300ebFF', '#8cff9dFF', '#f5b342FF'] # error bars
+    kcovVariables = ['1-coverage','2-coverage','3-coverage']
+    algos = ['ff_linpro', 'zz_linpro', 'ff_nocomm', 'nocomm', 'sm_av', 'bc_re']#data.coords['Algorithm'].data.tolist()
+    
+    data = datasets['fully_connected']
+    dataFullyMean = data.mean('time')
+    dataFullyKcovsMean = dataFullyMean.mean('Seed')
+    dataFullyKcovsStd = dataFullyMean.std('Seed')
+    simRatios = data.coords['HumansCamerasRatio'].data.tolist()
+    simRatios.reverse()
+    """""""""""""""""""""""""""
+        kcoverage comparison
+    """""""""""""""""""""""""""
+    
+    fig = plt.figure(figsize=figure_size)
+    
+    for j,simRatio in enumerate(simRatios):
+        # rows, columns, index
+        ax = fig.add_subplot(2,2,j+1)
+        ax.set_ylim([0,1])
+        ax.set_title("C/T Ratio = {0:.1f}".format(simRatio))
+        if j%2 == 0:
+            ax.set_ylabel("Coverage (%)")
+        plt.xticks(rotation=35, ha='right')
+        ax.yaxis.grid(True)
+
+        for i,s in enumerate(kcovVariables):
+            values = [dataFullyKcovsMean[s].sel(Algorithm=algoname, HumansCamerasRatio=simRatio).values.tolist() for algoname in algos]
+            errors = [dataFullyKcovsStd[s].sel(Algorithm=algoname, HumansCamerasRatio=simRatio).values.tolist() for algoname in algos]
+            ax.bar(algos, values, yerr=errors, label=s, capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
+        if j == 1:
+            ax.legend()
+
+    
+    plt.tight_layout()
+    fig.savefig('kcov_comparison.pdf')
+    
+    """""""""""""""""""""""""""
+        single algos
+    """""""""""""""""""""""""""
+    
+    for algo in algos:
+        fig = plt.figure(figsize=figure_size)
+        ax = fig.add_subplot(1,1,1)
+        ax.set_ylim([0,1])
+        ax.set_xlim([max(simRatios) + 0.1, min(simRatios) - 0.1])
+        ax.set_ylabel("Coverage (%)")
+        ax.set_xlabel("C/T Ratio")
+        ax.set_title(algo)
+        ax.set_xticks([1.1] + simRatios + [0])
+        ax.set_xticklabels([""] + simRatios + [""])
+        chartdataMean = dataFullyKcovsMean.sel(Algorithm=algo)
+        chartdataStd = dataFullyKcovsStd.sel(Algorithm=algo)
+        #xax = np.linspace(min(simRatios),max(simRatios),len(simRatios))
+        for i,s in enumerate(kcovVariables):
+            values = chartdataMean[s].values.tolist()
+            values.reverse()
+            errors = chartdataStd[s].values.tolist()
+            errors.reverse()
+            ax.plot(simRatios, values, label=s, color=kcovColors[i])
+            for j,r in enumerate(simRatios):
+                ax.errorbar(r, values[j], yerr=errors[j], fmt='o', color=kcovEcolors[i], capsize=4)
+        ax.legend()
+        plt.tight_layout()
+        fig.savefig(algo+'.pdf')
+    exit()
+    
+    
     data = dataset
     print("DATASET")
     print(dataset)

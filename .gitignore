@@ -10,6 +10,7 @@ testadata.txt
 testdata.txt
 data_summary_mean
 data_summary_std
+data_summary_datasets
 timeprocessed
 *.pdf
 data/
