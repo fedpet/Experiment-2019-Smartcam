@@ -64,9 +64,9 @@ public def fieldExploration() {
         let augment = getMaxMovementSpeed() * 2 // make sure we try to go at max speed
         destination = destination + [augment * cos(newDirectionAngle), augment * sin(newDirectionAngle)]
         env.put("destination", destination)
-        env.put("heading", destination)
-        //envRemove("heading")
-        //env.put("doSpin", true)
+        //env.put("heading", destination)
+        envRemove("heading")
+        env.put("doSpin", true)
         newDirectionAngle
     }
 }
