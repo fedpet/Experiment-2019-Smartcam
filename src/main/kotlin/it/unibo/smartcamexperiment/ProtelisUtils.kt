@@ -149,13 +149,14 @@ class ProtelisUtils {
  */
 class CameraTargetAssignmentProblemForProtelis {
     companion object {
+        private val problem = CameraTargetAssignmentProblem<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>() // CachedCameraTargetAssignmentProblem does not work
         /**
          * Just an adapter for protelis which works for Euclidean2DPosition only.
          * See [CameraTargetAssignmentProblem.solve]
          */
         @JvmStatic
         fun solve(cameras: Field<*>, targets: Tuple, maxCamerasPerDestination: Int): Map<String, VisibleNode<*, Euclidean2DPosition>> =
-            CameraTargetAssignmentProblem<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>().solve(
+            problem.solve(
                 cameras.toCameras(),
                 targets.toTargets(),
                 maxCamerasPerDestination) { camera, target ->
@@ -174,9 +175,9 @@ class CameraTargetAssignmentProblemForProtelis {
             maxCamerasPerDestination: Int,
             cost: FunctionDefinition
         ): Map<String, VisibleNode<*, *>> =
-            CameraTargetAssignmentProblem<CameraAdapter, VisibleNode<*, *>>().solve(
+            problem.solve(
                 cameras.toCameras(),
-                targets.toAnyTargets(),
+                targets.toTargets(),
                 maxCamerasPerDestination) {
                     camera, target -> JavaInteroperabilityUtils.runProtelisFunctionWithJavaArguments(
                         context,
@@ -271,7 +272,7 @@ inline fun <reified P : Position<P>> Tuple.toTargets(): List<VisibleNode<*, P>> 
         }
     } as List<VisibleNode<*, P>>
 
-private class CameraAdapter(
+class CameraAdapter(
     id: Any,
     pos: Any
 ) {

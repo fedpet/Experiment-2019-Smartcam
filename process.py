@@ -138,8 +138,9 @@ def openCsv(path):
 if __name__ == '__main__':
     # CONFIGURE SCRIPT
     directory = 'data'
+    charts_dir = 'charts/'
     pickleOutput = 'data_summary'
-    experiments = ['fully_connected']
+    experiments = ['fully_connected', 'limited_connection_range']
     floatPrecision = '{: 0.2f}'
     seedVars = ['Seed']
     timeSamples = 2000
@@ -240,31 +241,38 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
     import matplotlib.cm as cmx
     figure_size=(6, 6)
-    matplotlib.rcParams.update({'axes.titlesize': 14})
-    matplotlib.rcParams.update({'axes.labelsize': 13})
+    matplotlib.rcParams.update({'axes.titlesize': 13})
+    matplotlib.rcParams.update({'axes.labelsize': 12})
     
     kcovColors = ['#00d0ebFF','#61a72cFF','#e30000FF']
     kcovEcolors = ['#0300ebFF', '#8cff9dFF', '#f5b342FF'] # error bars
     kcovVariables = ['1-coverage','2-coverage','3-coverage']
     algos = ['ff_linpro', 'zz_linpro', 'ff_nocomm', 'nocomm', 'sm_av', 'bc_re']#data.coords['Algorithm'].data.tolist()
     
-    data = datasets['fully_connected']
-    dataFullyMean = data.mean('time')
+    dataFully = datasets['fully_connected']
+    dataFullyMean = dataFully.mean('time')
     dataFullyKcovsMean = dataFullyMean.mean('Seed')
     dataFullyKcovsStd = dataFullyMean.std('Seed')
-    simRatios = data.coords['HumansCamerasRatio'].data.tolist()
+    
+    dataLim = datasets['limited_connection_range']
+    dataLimMean = dataLim.mean('time')
+    dataLimKcovsMean = dataLimMean.mean('Seed')
+    dataLimKcovsStd = dataLimMean.std('Seed')
+    
+    simRatios = dataFully.coords['HumansCamerasRatio'].data.tolist()
     simRatios.reverse()
+    commRanges = dataLim.coords['ConnectionRange'].data.tolist()
+    commRanges.reverse()
     """""""""""""""""""""""""""
         kcoverage comparison
     """""""""""""""""""""""""""
-    
     fig = plt.figure(figsize=figure_size)
     
     for j,simRatio in enumerate(simRatios):
         # rows, columns, index
         ax = fig.add_subplot(2,2,j+1)
         ax.set_ylim([0,1])
-        ax.set_title("C/T Ratio = {0:.1f}".format(simRatio))
+        ax.set_title("Obj/Cam Ratio = {0:.1f}".format(simRatio))
         if j%2 == 0:
             ax.set_ylabel("Coverage (%)")
         plt.xticks(rotation=35, ha='right')
@@ -276,13 +284,33 @@ if __name__ == '__main__':
             ax.bar(algos, values, yerr=errors, label=s, capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
         if j == 1:
             ax.legend()
-
-    
     plt.tight_layout()
-    fig.savefig('kcov_comparison.pdf')
+    fig.savefig(charts_dir + 'fc_kcov_comparison.pdf')
+    fig = plt.figure(figsize=figure_size)
+    
+    algosWithoutNocomm = [a for a in algos if a != "nocomm"]
+    for j,commRange in enumerate(commRanges):
+        # rows, columns, index
+        ax = fig.add_subplot(2,2,j+1)
+        ax.set_ylim([0,1])
+        ax.set_title("Comm Range = {0:.0f}".format(commRange))
+        if j%2 == 0:
+            ax.set_ylabel("Coverage (%)")
+        plt.xticks(rotation=35, ha='right')
+        ax.yaxis.grid(True)
+
+        for i,s in enumerate(kcovVariables):
+            values = [dataLimKcovsMean[s].sel(Algorithm=algoname, ConnectionRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
+            errors = [dataLimKcovsStd[s].sel(Algorithm=algoname, ConnectionRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
+            ax.bar(algosWithoutNocomm, values, yerr=errors, label=s, capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
+        if j == 1:
+            ax.legend()
+    plt.tight_layout()
+    fig.savefig(charts_dir + 'lc_kcov_comparison.pdf')
+    fig = plt.figure(figsize=figure_size)
     
     """""""""""""""""""""""""""
-        single algos
+        single algos kcov
     """""""""""""""""""""""""""
     
     for algo in algos:
@@ -308,7 +336,15 @@ if __name__ == '__main__':
                 ax.errorbar(r, values[j], yerr=errors[j], fmt='o', color=kcovEcolors[i], capsize=4)
         ax.legend()
         plt.tight_layout()
-        fig.savefig(algo+'.pdf')
+        fig.savefig(charts_dir + algo+'.pdf')
+    
+    """""""""""""""""""""""""""""""""
+        limited connection range
+    """""""""""""""""""""""""""""""""
+        
+        
+        
+    
     exit()
     
     

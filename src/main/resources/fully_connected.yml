@@ -7,7 +7,7 @@ variables:
     parameters: [1, 1, 20, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["nocomm", "sm_av", "bc_re", "zz_linpro", "ff_nocomm", "ff_linpro"]
+    parameters: ["nocomm", "ff_nocomm", "bc_re", "sm_av", "zz_linpro", "ff_linpro"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed

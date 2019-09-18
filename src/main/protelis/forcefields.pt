@@ -4,43 +4,4 @@ import utils
 import exploration_strategies
 
 
-let localTargets = getLocalTargets()
-let allTargets = nbr(localTargets)
-let possibleTarget = leastCoveredTarget(allTargets)
-let k = getMaxCamerasPerTarget()
-
-/*
- * This does not work, used only for experiments.
- */
-
-rep(data <- [0, noTarget(), [], []]) {
-    let time = data.get(0)
-    let myTarget = data.get(1)
-    let knownTargets = data.get(2)
-    let selectedTargets = data.get(3)
-
-    myTarget = if(myTarget == noTarget() || !localTargets.contains(myTarget)) {
-        possibleTarget
-    } else {
-        localTargets.get(localTargets.indexof(myTarget)) // updated position
-    }
-
-    //knownTargets = unionHood(nbr([[self.getDeviceUID(), time, localTargets]].mergeAfter(knownTargets)))
-    //knownTargets = filterDuplicatedInformations(knownTargets)
-    //env.put("knownTargets", knownTargets)
-    fieldExploration()
-    /*
-
-    selectedTargets = unionHood(nbr([self.getDeviceUID(), time, myTarget].mergeAfter(selectedTargets)))
-
-
-
-    if(myTarget == noTarget()) {
-        fieldExploration()
-    } else {
-        follow(myTarget)
-    }
-    */
-    [time + 1, myTarget, knownTargets, selectedTargets]
-}
-
+fieldExploration()

@@ -17,13 +17,13 @@ import exploration_strategies
 
 
 rep(myTarget <- noTarget()) {
-    let localTargets = getLocalTargets();
-    let allTargets = nbr(localTargets);
-    let possibleTarget = closestTarget(elementsWithLeastSources(allTargets));
+    let localTargets = getLocalTargets()
+    let allTargets = nbr(localTargets)
+    let possibleTarget = closestTarget(elementsWithLeastSources(allTargets))
     myTarget = if(myTarget == noTarget() || !localTargets.contains(myTarget)) {
         possibleTarget
     } else {
         localTargets.get(localTargets.indexof(myTarget)) // updated position
-    };
-    followOrExplore(myTarget, fieldExploration)
+    }
+    followOrExplore(myTarget, zigZagExploration)
 }

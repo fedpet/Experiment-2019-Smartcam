@@ -15,6 +15,7 @@ repositories {
     mavenCentral()
     maven("https://dl.bintray.com/alchemist-simulator/Alchemist/")
     maven("https://dl.bintray.com/protelis/Protelis/")
+    jcenter()
 }
 
 dependencies {
@@ -23,6 +24,7 @@ dependencies {
     implementation("it.unibo.alchemist:alchemist-interfaces:9.0.0")
     implementation("it.unibo.alchemist:alchemist-smartcam:9.0.0")
     implementation("it.unibo.alchemist:alchemist-loading:9.0.0")
+    implementation("com.yundom:kache:1.0.5")
     implementation(kotlin("stdlib-jdk8"))
 }
 
@@ -107,6 +109,8 @@ fun makeTest(
 }
 
 
+makeTest("testperf", name="testperf")
+makeTest("forcefields", name="ff")
 makeTest("fully_connected", name="launchGUI")
 makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio"))
 makeTest("limited_connection_range", time = 2000.0, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
