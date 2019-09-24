@@ -90,6 +90,8 @@ programs:
     - time-distribution: 2
       type: ChemicalReaction
       actions:
+        - type: InitHeading
+          parameters: []
         - type: See
           parameters: [*FoVDistance, *FoVAngle, vision]
         - type: HeadTowardTarget

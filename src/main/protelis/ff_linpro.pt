@@ -8,8 +8,11 @@ import it.unibo.smartcamexperiment.ProtelisUtils.closestPositionToTargetAtDistan
 import utils
 import exploration_strategies
 
-let localTargets = getLocalTargets();
-let targets = unionHood PlusSelf(nbr(localTargets));
-let cameras = nbr(getCenterOfFov());
-let myTarget = CameraTargetAssignmentProblem.solve(cameras, targets, getMaxCamerasPerTarget()).getOrDefault(getUID(), noTarget());
+
+
+let localTargets = getLocalTargets()
+let targets = unionHood PlusSelf(nbr(localTargets))
+let cameras = nbr(getCenterOfFov())
+let myTarget = CameraTargetAssignmentProblem.solve(cameras, targets, getMaxCamerasPerTarget()).getOrDefault(getUID(), noTarget())
 followOrExplore(myTarget, fieldExploration)
+avoidCameraCollision(myTarget, localTargets)

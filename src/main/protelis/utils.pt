@@ -15,6 +15,7 @@ import it.unibo.smartcamexperiment.ProtelisUtils.getCenterOfFovAtDistance
 import org.protelis.lang.datatype.Option.of
 import org.protelis.lang.datatype.Option.empty
 import exploration_strategies
+import it.unibo.smartcamexperiment.ProtelisUtils.findNonCollidingPosition
 
 public def log(msg) {
     out.print("[");
@@ -22,6 +23,15 @@ public def log(msg) {
     out.print("]: ");
     out.println(msg);
     0
+}
+
+
+public def avoidCameraCollision(target, localTargets) {
+    if(target != noTarget() && localTargets.contains(target)) {
+        let assignedTs = nbr(target)
+        let pos = findNonCollidingPosition(assignedTs, env.get("destination"), target, getFoVCenterDistance())
+        env.put("destination", pos)
+    } else { 0 }
 }
 
 public def optionalOf(value) {

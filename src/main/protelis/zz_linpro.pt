@@ -13,3 +13,4 @@ let targets = unionHood PlusSelf(nbr(localTargets));
 let cameras = nbr(getCenterOfFov());
 let myTarget = CameraTargetAssignmentProblem.solve(cameras, targets, getMaxCamerasPerTarget()).getOrDefault(getUID(), noTarget());
 followOrExplore(myTarget, zigZagExploration)
+avoidCameraCollision(myTarget, localTargets)

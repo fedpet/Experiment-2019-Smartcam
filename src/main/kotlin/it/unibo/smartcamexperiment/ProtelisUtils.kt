@@ -9,6 +9,7 @@ import it.unibo.alchemist.model.interfaces.Position2D
 import it.unibo.alchemist.model.interfaces.VisibleNode
 import it.unibo.alchemist.model.interfaces.environments.EuclideanPhysics2DEnvironment
 import it.unibo.alchemist.protelis.AlchemistExecutionContext
+import org.apache.commons.math3.random.RandomGenerator
 import org.protelis.lang.datatype.DeviceUID
 import org.protelis.lang.datatype.Field
 import org.protelis.lang.datatype.FunctionDefinition
@@ -16,6 +17,8 @@ import org.protelis.lang.datatype.Tuple
 import org.protelis.lang.datatype.impl.ArrayTupleImpl
 import org.protelis.lang.interpreter.util.JavaInteroperabilityUtils
 import org.protelis.vm.ExecutionContext
+import java.lang.Math.toDegrees
+import java.lang.Math.toRadians
 import java.util.stream.Collectors
 import kotlin.math.cos
 import kotlin.math.sin
@@ -41,8 +44,9 @@ class ProtelisUtils {
         fun getCenterOfFovAtDistance(context: AlchemistExecutionContext<Euclidean2DPosition>, distance: Double): Tuple {
             val env = context.environmentAccess
             require(env is EuclideanPhysics2DEnvironment<Any>)
-            require(context.deviceUID is Node<*>)
-            val node = context.deviceUID as Node<Any>
+            val node = context.deviceUID
+            require(node is Node<*>)
+            node as Node<Any>
             val angle = env.getHeading(node).asAngle()
             return (env.getPosition(node) + Euclidean2DPosition(distance * cos(angle), distance * sin(angle))).toTuple()
         }
@@ -84,6 +88,39 @@ class ProtelisUtils {
             field.stream().filter {
                 JavaInteroperabilityUtils.runProtelisFunctionWithJavaArguments(context, func, listOf(it.value)).toBoolean()
             }.map { it.key }.collect(Collectors.toList()).toTuple()
+
+        @JvmStatic
+        fun findDevicesByData(context: ExecutionContext, field: Field<*>, func: FunctionDefinition, mapDevice: FunctionDefinition) =
+            field.stream().filter {
+                JavaInteroperabilityUtils.runProtelisFunctionWithJavaArguments(context, func, listOf(it.value)).toBoolean()
+            }.map {
+                JavaInteroperabilityUtils.runProtelisFunctionWithJavaArguments(context, mapDevice, listOf(it.value))
+            }.collect(Collectors.toList()).toTuple()
+
+        @Suppress("UNCHECKED_CAST")
+        @JvmStatic
+        fun findNonCollidingPosition(context: AlchemistExecutionContext<Euclidean2DPosition>, field: Field<*>, default: Tuple, target: VisibleNode<Any, Euclidean2DPosition>, distance: Double): Tuple {
+            val env = context.environmentAccess
+            require(env is EuclideanPhysics2DEnvironment<Any>)
+            val node = context.deviceUID
+            require(node is Node<*>)
+            node as Node<Any>
+            val allNodes = field.stream()
+                .filter { it.value == target}
+                .map { require(it.key is Node<*>); it.key as Node<Any> }
+                .sorted()
+                .collect(Collectors.toList())
+            return if(allNodes.size <= 1) {
+                default
+            } else {
+                val myPos = allNodes.indexOf(node)
+                val plusAngle = (env.getPosition(allNodes.first()!!) - target.position).asAngle()
+
+                val offs = 2 * Math.PI / allNodes.size
+                val targetAngle = offs * myPos + plusAngle
+                (target.position + env.makePosition(cos(targetAngle) * distance, sin(targetAngle) * distance)).toTuple()
+            }
+        }
 
         /**
          * Returns the data contained in the [field] for the [device], or [default] if there is none.

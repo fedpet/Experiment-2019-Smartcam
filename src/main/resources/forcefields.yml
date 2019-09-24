@@ -7,7 +7,7 @@ variables:
     parameters: [1, 1, 1, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["forcefields"]
+    parameters: ["ff_linpro"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
@@ -17,9 +17,9 @@ variables:
     type: ArbitraryVariable
     parameters: [1.4]
   NumHumans: &NumHumans
-    formula: 40
+    formula: 30
   NumCameras: &NumCameras
-    formula: 16
+    formula: 15
   EnvironmentSize: &EnvironmentSize
     type: ArbitraryVariable
     parameters: [500]
@@ -76,6 +76,8 @@ programs:
     - time-distribution: 2
       type: ChemicalReaction
       actions:
+        - type: InitHeading
+          parameters: []
         - type: See
           parameters: [*FoVDistance, *FoVAngle, vision]
         - type: HeadTowardTarget

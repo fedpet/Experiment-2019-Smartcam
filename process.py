@@ -255,6 +255,7 @@ if __name__ == '__main__':
     dataFullyKcovsStd = dataFullyMean.std('Seed')
     
     dataLim = datasets['limited_connection_range']
+    #print(dataLim)
     dataLimMean = dataLim.mean('time')
     dataLimKcovsMean = dataLimMean.mean('Seed')
     dataLimKcovsStd = dataLimMean.std('Seed')
@@ -263,6 +264,7 @@ if __name__ == '__main__':
     simRatios.reverse()
     commRanges = dataLim.coords['ConnectionRange'].data.tolist()
     commRanges.reverse()
+    commRanges = [c for c in commRanges if c != 25] # not ready yet
     """""""""""""""""""""""""""
         kcoverage comparison
     """""""""""""""""""""""""""
@@ -272,7 +274,7 @@ if __name__ == '__main__':
         # rows, columns, index
         ax = fig.add_subplot(2,2,j+1)
         ax.set_ylim([0,1])
-        ax.set_title("Obj/Cam Ratio = {0:.1f}".format(simRatio))
+        ax.set_title("Cam/Obj Ratio = {0:.1f}".format(simRatio))
         if j%2 == 0:
             ax.set_ylabel("Coverage (%)")
         plt.xticks(rotation=35, ha='right')
@@ -288,7 +290,7 @@ if __name__ == '__main__':
     fig.savefig(charts_dir + 'fc_kcov_comparison.pdf')
     fig = plt.figure(figsize=figure_size)
     
-    algosWithoutNocomm = [a for a in algos if a != "nocomm"]
+    algosWithoutNocomm = algos#[a for a in algos if a != "nocomm"]
     for j,commRange in enumerate(commRanges):
         # rows, columns, index
         ax = fig.add_subplot(2,2,j+1)
@@ -341,198 +343,6 @@ if __name__ == '__main__':
     """""""""""""""""""""""""""""""""
         limited connection range
     """""""""""""""""""""""""""""""""
-        
-        
-        
-    
-    exit()
-    
-    
-    data = dataset
-    print("DATASET")
-    print(dataset)
-    print("")
-    print("")
-    print("DATASET SEL SMAV")
-    print(dataset.sel(Algorithm='smav'))
-    print("")
-    print("")
-    print("DATASET SEL SMAV MEAN SEED")
-    print(dataset.sel(Algorithm='smav').mean())
-    print(dataset.sel(Algorithm='smav').std())
-    print("")
-    print("")
-    print("DATASET SEL SMAV MEAN SEED")
-    print(dataset.sel(Algorithm='simplex').mean('time').mean())
-    print(dataset.sel(Algorithm='smav').mean('time').mean())
-    print(dataset.sel(Algorithm='simplex').sum('time').mean())
-    print(dataset.sel(Algorithm='smav').sum('time').mean())
-    #print(dataset.sel(Algorithm='simplex').mean('time').mean())
-    #print(dataset.sel(Algorithm='simplex').mean('time').std())
-    #print(dataset.sel(Algorithm='smav').mean('time').mean())
-    #print(dataset.sel(Algorithm='smav').mean('time').std())
-    #print("")
-    #print("")
-    #print("MEANS SEL MEAN")
-    exit()
-    
-    fig = plt.figure(figsize=figure_size)
-    plt.ylim(0, 1)
-    ax = fig.add_subplot(1,1,1)
-    ax.yaxis.grid(True)
 
-    algos = data.coords['Algorithm'].data.tolist()
-    series = ['1-coverage','2-coverage','3-coverage']
-    for s in series:
-        cov = [data[s].sel(Algorithm=algoname).mean(seedVars).values.tolist() for algoname in algos]
-        covyerr = [data[s].sel(Algorithm=algoname).std(seedVars).values.tolist() for algoname in algos]
-
-        ax.bar(algos, cov, yerr=covyerr, label=s, capsize=5)
-
-    #ax.xticks(algos)
-    #ax.ylabel("Medals")
-    #ax.xlabel("Countries")
-    ax.legend(loc="upper right")
-    #ax.title("2012 Olympics Top Scorers")
-    fig.savefig('kcov.pdf')
-    """
-    print("means")
-    print(data)
-    varMeanings = {
-        "1-coverage" : "Number of targets covered by 1 camera",
-        "2-coverage" : "Number of targets covered by 2 cameras",
-        "3-coverage" : "Number of targets covered by 3 cameras",
-        "distance" : "Distance traveled (m)"
-    }
-    for var in data.data_vars:
-        chartsetdata = data[var]
-        xdata = chartsetdata['time'] / 60
-        reifiedcoords = [x for x in chartsetdata.coords if x != 'time']
-        for coord in reifiedcoords:
-            fig = plt.figure(figsize = figure_size)
-            ax = fig.add_subplot(1, 1, 1)
-            ax.set_xlabel("Simulated time (minutes)")
-            ax.set_xlim(min(xdata), max(xdata))
-            ax.set_title(coord)
-            ax.set_ylabel(varMeanings[chartsetdata.name])
-#            ax.set_yscale('log')
-            mergedata = chartsetdata.mean([x for x in reifiedcoords if x != coord])
-            for linename in mergedata[coord]:
-                chartdata = mergedata.loc[{coord: linename.values}]
-                ax.plot(xdata, chartdata, label = str(linename.values))
-            ax.legend()
-    """
-    
-    
-    
-    # Prepare selected charts
-    # Evaluation of the backoff parameter
-    """
-    def makechart(title, ylabel, ydata, colors = None):
-        fig = plt.figure(figsize = figure_size)
-        ax = fig.add_subplot(1, 1, 1)
-        ax.set_title(title)
-        xdata = means['simulation']['time'] / 60
-        ax.set_xlabel("Simulated time (minutes)")
-        ax.set_ylabel(ylabel)
-#        ax.set_ylim(0)
-        ax.set_xlim(min(xdata), max(xdata))
-        plt.axvline(x=10, color='black', linestyle='dashed')
-        index = 0
-        for (label, data) in ydata.items():
-            ax.plot(xdata, data.sel(Algorithm='simplex'), label=label, color=colors(index / (len(ydata) - 1)) if colors else None)
-            index += 1
-        return (fig, ax)
-    print(data)
-    chartdata = data['1-coverage'].mean()
-    print(chartdata)
-    (fig, ax) = makechart(
-        "K-Coverage",
-        '% coverage',
-        {
-            "1-coverage": data['1-coverage'],
-            "2-coverage": data['2-coverage'],
-            "3-coverage": data['3-coverage']
-        },
-#        colors = cmx.jet
-    )
-    ax.legend(ncol = 2)
-    fig.savefig('simplex.pdf')
-    """
-
-    
-    """
-    chartdata = data['sourceLevel[Mean]'].mean(['shutdownProbability', 'peoplecount'])
-    (fig, ax) = makechart(
-        "K-Coverage",
-        varMeanings['sourceLevel[Mean]'],
-        {
-            "disabled": chartdata[0],
-            "Î±=0.001": chartdata[2],
-            "Î±=0.01": chartdata[3],
-            "Î±=0.1": chartdata[4],
-            "Î±=1": chartdata[5],
-            "Î±=0": chartdata[1],
-        },
-#        colors = cmx.jet
-    )
-    ax.legend(ncol = 2)
-    fig.savefig('feedbackalpha0.pdf')
-
-    chartdata = data['sourceLevel[StandardDeviation]'].mean(['shutdownProbability', 'peoplecount'])
-    (fig, ax) = makechart(
-        "Evaluation of the feedback loop for varying Î±",
-        varMeanings['sourceLevel[StandardDeviation]'],
-        {
-            "disabled": chartdata[0],
-            "Î±=0.001": chartdata[2],
-            "Î±=0.01": chartdata[3],
-            "Î±=0.1": chartdata[4],
-            "Î±=1": chartdata[5],
-            "Î±=0": chartdata[1],
-        }
-    )
-    ax.set_ylim(0, 160)
-    ax.legend(ncol = 3)
-    fig.savefig('feedbackalpha1.pdf')
-    mixcolormap = lambda x: cmx.winter(1 - x * 2) if x < 0.5 else cmx.YlOrRd((x - 0.5) * 2 * 0.7 + 0.3) # cmx.winter(1 - (x - 0.5) * 2)
-    from string import Template
-    for aggregator in ['Mean', 'StandardDeviation', 'Sum']:
-        varname = 'sgcg[' + aggregator + ']'
-        nofeedback = data[varname].sel(shutdownProbability=1, backoffAlpha=-1)
-        feedback = data[varname].sel(shutdownProbability=1, backoffAlpha=0.01)
-        template = Template('fb ${status} ${users} u')
-        chartentries = {
-            template.substitute(status = status, users = str(int(users))) : 
-                (feedback if (status == 'on') else nofeedback).sel(peoplecount=users) 
-            for status in ['on', 'off'] for users in feedback['peoplecount'] }
-        (fig, ax) = makechart(
-            "System performance with active users (Ï=1)",
-            varMeanings[varname],
-            chartentries,
-            colors = mixcolormap
-        )
-        ax.set_yscale('log')
-        ax.set_ylim(ax.get_ylim()[0] * 0.2)
-        ax.legend(ncol = 3)
-        fig.savefig(aggregator + "Performance.pdf")
-
-        chartdata = data[varname].sel(peoplecount=500)
-        template = Template('fb ${status} Ï=${rho}')
-        chartentries = {
-            template.substitute(status = status, rho = str(rho)) : 
-                chartdata.sel(shutdownProbability=rho, backoffAlpha= 0.01 if status == 'on' else -1)
-            for status in ['on', 'off'] for rho in chartdata['shutdownProbability'].values
-        }
-        (fig, ax) = makechart(
-            "System resilience to disruption (500 users)",
-            varMeanings[varname],
-            chartentries,
-            colors = mixcolormap
-        )
-        ax.set_ylim(ax.get_ylim()[0] * 0.2)
-        ax.legend(ncol=3)
-        fig.savefig(aggregator+"Resilience.pdf")
-    """
         
         
