@@ -90,6 +90,9 @@ open class CameraTargetAssignmentProblem<S, D> {
                 repeat(sources.size) { srcIdx ->
                     coefficients[srcIdx * totalDestinations + dstIdx] = 1.0
                 }
+
+                it.add(LinearConstraint(coefficients, Relationship.LEQ, maxSourcesPerDestination.toDouble()))
+                /*
                 val sourcesPerDestination = min(maxSourcesPerDestination.toDouble(), sources.size.toDouble() / destinations.size)
                 if (sources.size.toDouble() % destinations.size == 0.0) {
                     // if we can save constraints we do so
@@ -98,6 +101,7 @@ open class CameraTargetAssignmentProblem<S, D> {
                     it.add(LinearConstraint(coefficients, Relationship.GEQ, floor(sourcesPerDestination)))
                     it.add(LinearConstraint(coefficients, Relationship.LEQ, ceil(sourcesPerDestination)))
                 }
+                */
             }
         })
         val solution = SimplexSolver().optimize(
