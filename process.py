@@ -145,7 +145,7 @@ if __name__ == '__main__':
     seedVars = ['Seed']
     timeSamples = 2000
     minTime = 0
-    maxTime = 2000.1
+    maxTime = 2000
     timeColumnName = 'time'
     logarithmicTime = False
     
@@ -247,7 +247,8 @@ if __name__ == '__main__':
     kcovColors = ['#00d0ebFF','#61a72cFF','#e30000FF']
     kcovEcolors = ['#0300ebFF', '#8cff9dFF', '#f5b342FF'] # error bars
     kcovVariables = ['1-coverage','2-coverage','3-coverage']
-    algos = ['ff_linpro', 'zz_linpro', 'ff_nocomm', 'nocomm', 'sm_av', 'bc_re']#data.coords['Algorithm'].data.tolist()
+    kcovTrans = ['1-cov','2-cov','3-cov']
+    algos = ['ff_linpro', 'zz_linpro','ff_linproF', 'zz_linproF', 'ff_nocomm', 'nocomm', 'sm_av', 'bc_re']#data.coords['Algorithm'].data.tolist()
     
     dataFully = datasets['fully_connected']
     dataFullyMean = dataFully.mean('time')
@@ -283,7 +284,7 @@ if __name__ == '__main__':
         for i,s in enumerate(kcovVariables):
             values = [dataFullyKcovsMean[s].sel(Algorithm=algoname, HumansCamerasRatio=simRatio).values.tolist() for algoname in algos]
             errors = [dataFullyKcovsStd[s].sel(Algorithm=algoname, HumansCamerasRatio=simRatio).values.tolist() for algoname in algos]
-            ax.bar(algos, values, yerr=errors, label=s, capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
+            ax.bar(algos, values, yerr=errors, label=kcovTrans[i], capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
         if j == 1:
             ax.legend()
     plt.tight_layout()
@@ -304,7 +305,7 @@ if __name__ == '__main__':
         for i,s in enumerate(kcovVariables):
             values = [dataLimKcovsMean[s].sel(Algorithm=algoname, ConnectionRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
             errors = [dataLimKcovsStd[s].sel(Algorithm=algoname, ConnectionRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
-            ax.bar(algosWithoutNocomm, values, yerr=errors, label=s, capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
+            ax.bar(algosWithoutNocomm, values, yerr=errors, label=kcovTrans[i], capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
         if j == 1:
             ax.legend()
     plt.tight_layout()
@@ -314,17 +315,23 @@ if __name__ == '__main__':
     """""""""""""""""""""""""""
         single algos kcov
     """""""""""""""""""""""""""
+    fig = plt.figure(figsize=(7,7))
     
-    for algo in algos:
-        fig = plt.figure(figsize=figure_size)
-        ax = fig.add_subplot(1,1,1)
+    for idx,algo in enumerate(algos):
+        ax = fig.add_subplot(3,3,idx+1)
         ax.set_ylim([0,1])
         ax.set_xlim([max(simRatios) + 0.1, min(simRatios) - 0.1])
-        ax.set_ylabel("Coverage (%)")
-        ax.set_xlabel("C/T Ratio")
-        ax.set_title(algo)
+        if idx == 3:
+            ax.set_ylabel("Coverage (%)")
+        if idx < 3:
+            ax.set_title("Cam/Obj Ratio")
+        if idx%3 > 0:
+            ax.set_yticklabels([])
+        ax.set_xlabel(algo)
         ax.set_xticks([1.1] + simRatios + [0])
         ax.set_xticklabels([""] + simRatios + [""])
+        if idx < 6:
+            ax.set_xticklabels([])
         chartdataMean = dataFullyKcovsMean.sel(Algorithm=algo)
         chartdataStd = dataFullyKcovsStd.sel(Algorithm=algo)
         #xax = np.linspace(min(simRatios),max(simRatios),len(simRatios))
@@ -333,12 +340,13 @@ if __name__ == '__main__':
             values.reverse()
             errors = chartdataStd[s].values.tolist()
             errors.reverse()
-            ax.plot(simRatios, values, label=s, color=kcovColors[i])
+            ax.plot(simRatios, values, label=kcovTrans[i], color=kcovColors[i])
             for j,r in enumerate(simRatios):
-                ax.errorbar(r, values[j], yerr=errors[j], fmt='o', color=kcovEcolors[i], capsize=4)
-        ax.legend()
-        plt.tight_layout()
-        fig.savefig(charts_dir + algo+'.pdf')
+                ax.errorbar(r, values[j], yerr=errors[j], fmt='.', color=kcovEcolors[i], capsize=4)
+        if idx == 1:
+            ax.legend()
+    plt.tight_layout()
+    fig.savefig(charts_dir + 'ctratioall.pdf')
     
     """""""""""""""""""""""""""""""""
         limited connection range

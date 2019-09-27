@@ -91,8 +91,13 @@ open class CameraTargetAssignmentProblem<S, D> {
                     coefficients[srcIdx * totalDestinations + dstIdx] = 1.0
                 }
 
+                // "STANDARD" constraints
                 it.add(LinearConstraint(coefficients, Relationship.LEQ, maxSourcesPerDestination.toDouble()))
+                val minAm = min(1.0, floor(sources.size.toDouble() / destinations.size))
+                it.add(LinearConstraint(coefficients, Relationship.GEQ, minAm))
+
                 /*
+                // "FAIR" constraints
                 val sourcesPerDestination = min(maxSourcesPerDestination.toDouble(), sources.size.toDouble() / destinations.size)
                 if (sources.size.toDouble() % destinations.size == 0.0) {
                     // if we can save constraints we do so
