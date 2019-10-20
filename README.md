@@ -65,7 +65,7 @@ LinPro requires that sensors know their own position in space, and that they can
 - NoComm: Best effort without communication
 
 ## Results
-Error bars indicate the standard deviations. The charts show the percentage of the time during which k-coverage was achieved.
+The charts show the percentage of the time during which k-coverage was achieved. Error bars indicate the standard deviations.
 ### By varying the cam-obj ratio
 ![Performance of the algorithms by varying the cam/obj ratio](chart_cam_obj_ratio.png)
 ### By varying the communication range
