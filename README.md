@@ -30,8 +30,8 @@ Models the problem using linear programming, achieves k-coverage minimizing the 
 ## Simulations scenario
 | Variable                              | Value         |
 |---------------------------------------|---------------|
-| Duration of the simulation            | 2000s         |
-| Size of the arena                     | 500 x 500m    |
+| Duration of the simulation            | 2000 s        |
+| Size of the arena                     | 500 x 500 m   |
 | Obj movement speed                    | 1.4 m/s       |
 | Obj movement strategy                 | Lévy Walk     |
 | Obj number                            | 100           |
@@ -39,9 +39,9 @@ Models the problem using linear programming, achieves k-coverage minimizing the 
 | Obj / Cam ratio                       | 1             |
 | Cam algorithm                         | NoComm        |
 | Cam movement speed                    | 3 m/s         |
-| Cam FoV distance                      | 30m           |
+| Cam FoV distance                      | 30 m          |
 | Cam FoV angle                         | 60 deg        |
-| Cam rotation speed                    | $\pi$/5 rad/s |
+| Cam rotation speed                    | π/5 rad/s     |
 | Cam comm range                        | 800m          |
 | Protelis' round frequency             | 1 Hz          |
 | Max cams per target (k in k-coverage) | 3             |
