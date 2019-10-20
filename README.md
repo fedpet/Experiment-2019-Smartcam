@@ -1,10 +1,70 @@
 # Experiment-2019-Smartcam
+
+## Problem
+- We have a set of mobile sensors (smartcameras) which can communicate and detect targets in their field of view.
+- Cover an area in which there may be moving targets.
+- Maximize efficency and in particular the k-coverage. K-Coverage is reached for one target as long as it's being observed by at least K sensors.
+
+## Solution - LinPro
+Models the problem using linear programming, achieves k-coverage minimizing the movements.
+
+## Links
+- [My thesis](https://amslaurea.unibo.it/19092/) - Contains the formulation of LinPro and all the details. In italian because of bureocracy... Interesting things from chapter 3, page 22
+- [Online multi-object k-coverage with mobile smart cameras](https://doi.org/10.1145/3131885.3131909) - Contains the formal definition of k-coverage and some approaches for coordination algorithms
+- [Alchemist Simulator](https://github.com/AlchemistSimulator/Alchemist) - The simulator used in this experiment
+
+## FF-LinPro showcase (LinPro with Force Field Exploration)
+![Showcase of LinPro with Force Field Exploration](video1.gif)
+
+## Simulations scenario
+| Variable                              | Value         |
+|---------------------------------------|---------------|
+| Duration of the simulation            | 2000s         |
+| Size of the arena                     | 500 x 500m    |
+| Obj movement speed                    | 1.4 m/s       |
+| Obj movement strategy                 | Lévy Walk     |
+| Obj number                            | 100           |
+| Definition of Target                  | (*)           |
+| Obj / Cam ratio                       | 1             |
+| Cam algorithm                         | NoComm        |
+| Cam movement speed                    | 3 m/s         |
+| Cam FoV distance                      | 30m           |
+| Cam FoV angle                         | 60 deg        |
+| Cam rotation speed                    | $\pi$/5 rad/s |
+| Cam comm range                        | 800m          |
+| Protelis' round frequency             | 1 Hz          |
+| Max cams per target (k in k-coverage) | 3             |
+| Seed                                  | 1             |
+
+(*) Each object has 5% probability of becoming a target (red) every 20s. With the same strategy and probability it can stop being one (green).
+
+![Scenario](video2.gif)
+
+## Algorithms evaluated
+- FF-LinPro: LinPro with Force Field Exploration
+- ZZ-LinPro: LinPro with "ZigZag" exploration
+- FF-LinProF: Fair variant of LinPro
+- ZZ-LinProF: Fair variant of LinPro
+- BC-RE: Broadcast-ReceivedCalls from "Online multi-object k-coverage with mobile smart cameras"
+- SM-AV: Smooth-Available from "Online multi-object k-coverage with mobile smart cameras"
+- NoComm: Best effort without communication
+
+## Results
+Error bars indicate the standard deviations. The charts show the percentage of the time during which k-coverage was achieved.
+### By varying the cam/obj ratio
+![Performance of the algorithms by varying the cam/obj ratio](chart_cam_obj_ratio.png)
+### By varying the communication range
+![Performance of the algorithms by varying the comm range](chart_commrange.png)
+
+
+## Getting Started
 I'm sorry, the code is a mess but finishing my thesis in time took the priority.
 
 Run `gradlew build` to compile.
 
 `gradlew showcase_ff_linpro_from_center`  and `gradlew showcase_ff_linpro_generic`
  to run the simulations shown during the presentation.
+ 
 
 ## TODO
 - Clean the mess
