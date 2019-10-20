@@ -1,8 +1,5 @@
 package it.unibo.smartcamexperiment
 
-import com.yundom.kache.Builder
-import com.yundom.kache.Kache
-import com.yundom.kache.config.LRU
 import org.apache.commons.math3.linear.ArrayRealVector
 import org.apache.commons.math3.optim.linear.LinearConstraint
 import org.apache.commons.math3.optim.linear.LinearConstraintSet
@@ -16,7 +13,7 @@ import kotlin.math.floor
 import kotlin.math.min
 
 /**
- * NOTE: Apache SimplexSolver is extremely slow for big problems. may need to rewrite this using a better implementation
+ * NOTE: Apache's SimplexSolver is extremely slow for big problems. may need to rewrite this using a better implementation
  * e.g. https://github.com/WinVector/WVLPSolver
  * AND/OR Let fewer nodes solve it.
  *
@@ -24,7 +21,7 @@ import kotlin.math.min
  * @param <S> source type
  * @param <D> destination type
  */
-open class CameraTargetAssignmentProblem<S, D> {
+class CameraTargetAssignmentProblem<S, D> {
 
     /**
      * Given a list of sources and a list of destinations, decides which source gets which destination.
@@ -34,7 +31,7 @@ open class CameraTargetAssignmentProblem<S, D> {
      * @param cost a function calculating the cost for a source to reach the given destination.
      * @return a map from sources to destinations
      */
-    open fun solve(sources: List<S>, destinations: List<D>, maxSourcesPerDestination: Int, cost: (source: S, destination: D) -> Double): Map<S, D> {
+    fun solve(sources: List<S>, destinations: List<D>, maxSourcesPerDestination: Int, cost: (source: S, destination: D) -> Double): Map<S, D> {
         if (sources.isEmpty() || destinations.isEmpty() || maxSourcesPerDestination <= 0) {
             return emptyMap()
         }
@@ -97,7 +94,7 @@ open class CameraTargetAssignmentProblem<S, D> {
                 it.add(LinearConstraint(coefficients, Relationship.GEQ, minAm))
 
                 /*
-                // "FAIR" constraints
+                // "FAIR" constraints, worse performance
                 val sourcesPerDestination = min(maxSourcesPerDestination.toDouble(), sources.size.toDouble() / destinations.size)
                 if (sources.size.toDouble() % destinations.size == 0.0) {
                     // if we can save constraints we do so
@@ -124,54 +121,3 @@ open class CameraTargetAssignmentProblem<S, D> {
         return sourceToDestination
     }
 }
-
-/*
-private class LruCache<I, O>(
-    private val maxSize: Int,
-    private val maxAge: Long
-) {
-    private data class CacheRecord<O>(
-        val output: O,
-        val time: Long
-    ): Comparable<CacheRecord<O>> {
-
-        override fun compareTo(other: CacheRecord<O>) = time.compareTo(other.time)
-    }
-    private val ioMap = sortedMapOf<CacheRecord<I>, O>()
-    private var oldest: Long = 0
-
-    private fun cache(input: I, function: (I) -> O): O {
-        val nowTime = getTime()
-        removeOldest(nowTime)
-        var invoked = false
-        val record = ioMap.getOrPut(input) {
-            invoked = true
-            CacheRecord(function.invoke(input), nowTime)
-        }
-        if (!invoked) {
-            ioMap.replace(input, CacheRecord(record.output, nowTime))
-        }
-        return record.output
-    }
-
-    private fun removeOldest(time: Long) {
-        if(ioMap.keys.size > 0) {
-            if (ioMap.keys.size >= maxSize) {
-                ioMap.entries.firstOrNull()?.also {
-                    ioMap.remove(it.key)
-                }
-            } else if(time - oldest >= maxAge) {
-                ioMap.entries.firstOrNull()?.also {
-                    if(it.value.time <= oldest) {
-                        ioMap.remove(it.key)
-                    }
-                    oldest = it.value.time
-                    removeOldest(time)
-                }
-            }
-        }
-    }
-
-    private fun getTime() = System.currentTimeMillis()
-}
-*/

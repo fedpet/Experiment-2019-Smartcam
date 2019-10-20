@@ -25,6 +25,8 @@ import kotlin.math.sin
 
 /**
  * Utility class for Kotlin - Protelis intercommunication.
+ * Protelis is dynamically typed so a lot of adapters and conversions are needed.
+ * Protelis can import Java static methods.
  */
 class ProtelisUtils {
 
@@ -89,6 +91,11 @@ class ProtelisUtils {
                 JavaInteroperabilityUtils.runProtelisFunctionWithJavaArguments(context, func, listOf(it.value)).toBoolean()
             }.map { it.key }.collect(Collectors.toList()).toTuple()
 
+        /**
+         * Finds devices in [field] whose data makes [func] returns a value which can be cast to a boolean.
+         * [func] is expected to have the following signature: fun func(data: Any): Boolean
+         * Finally map the results with the [mapDevice] strategy which must have the following signture: fun func(device: Any): Any
+         */
         @JvmStatic
         fun findDevicesByData(context: ExecutionContext, field: Field<*>, func: FunctionDefinition, mapDevice: FunctionDefinition) =
             field.stream().filter {
@@ -153,14 +160,6 @@ class ProtelisUtils {
         fun cloneFieldToMap(field: Field<*>) = field.toMap()!!
 
         /**
-         * Average value of the elements in the [tuple]. The [tuple] must contain Numbers only.
-         */
-        @JvmStatic
-        fun averageOfTuple(tuple: Tuple) =
-            tuple.map<Any, Number> { require(it is Number); it }
-                .sumByDouble { it.toDouble() } / tuple.size()
-
-        /**
          * Check if [target#node] contains a molecule named [attribute] and its concentration can be cast to Boolean,
          * in which case it returns it, otherwise false.
          */
@@ -186,7 +185,7 @@ class ProtelisUtils {
  */
 class CameraTargetAssignmentProblemForProtelis {
     companion object {
-        private val problem = CameraTargetAssignmentProblem<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>() // CachedCameraTargetAssignmentProblem does not work
+        private val problem = CameraTargetAssignmentProblem<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
         /**
          * Just an adapter for protelis which works for Euclidean2DPosition only.
          * See [CameraTargetAssignmentProblem.solve]
@@ -226,6 +225,7 @@ class CameraTargetAssignmentProblemForProtelis {
 
 /**
  * See [OverlapRelationsGraph].
+ * This is just an adapter for Protelis.
  */
 class OverlapRelationsGraphForProtelis(
     private val myUid: DeviceUID,
@@ -283,13 +283,30 @@ class OverlapRelationsGraphForProtelis(
 }
 
 /**
+ * An adapter for protelis. It represents a camera.
+ */
+class CameraAdapter(
+    id: Any,
+    pos: Any
+) {
+    val uid = id.toString()
+    val position: Euclidean2DPosition = if (pos is Euclidean2DPosition) {
+        pos
+    } else {
+        require(pos is Tuple && pos.size() >= 2)
+        pos.toPosition()
+    }
+
+    override fun toString() =
+        "Camera#$uid"
+}
+
+/**
  * Creates a [Tuple] from any collection.
  */
 private fun Collection<*>.toTuple(): Tuple = with(iterator()) { ArrayTupleImpl(*Array(size) { next() }) }
 
-private fun <P : Position2D<P>> Position2D<P>.toTuple(): Tuple {
-    return ArrayTupleImpl(x, y)
-}
+private fun <P : Position2D<P>> Position2D<P>.toTuple(): Tuple = ArrayTupleImpl(x, y)
 
 private fun Field<*>.toCameras() = stream().map { CameraAdapter(it.key, it.value) }.collect(Collectors.toList())
 
@@ -309,21 +326,6 @@ inline fun <reified P : Position<P>> Tuple.toTargets(): List<VisibleNode<*, P>> 
         }
     } as List<VisibleNode<*, P>>
 
-class CameraAdapter(
-    id: Any,
-    pos: Any
-) {
-    val uid = id.toString()
-    val position: Euclidean2DPosition = if (pos is Euclidean2DPosition) {
-        pos
-    } else {
-        require(pos is Tuple && pos.size() >= 2)
-        pos.toPosition()
-    }
-
-    override fun toString() =
-        "Camera#$uid"
-}
 
 private fun Tuple.toPosition(): Euclidean2DPosition {
     require(size() == 2)

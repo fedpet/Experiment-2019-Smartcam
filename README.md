@@ -18,6 +18,7 @@ Run `gradlew build` to compile.
   - ProtelisUtils is unreadable
 - Improve performance of LinPro during simulations
   - ~~CachedCameraTargetAssignmentProblem doesn't work because cameras are not synchronized, find another method~~
+  - Caching solutions cannot work because the computational rounds are not synchronized.
   - The optimal solution for a round could probably be also the optimal solution for the next one, or a feasible one
   - If the set of targets and cameras didn't change from the previous round, the previous optimal solution could be assumed to still be the optimal one. This is an approximation.
   - There exists faster algorithms than the simplex method to solve transportation problems. Hint: Kramer's theorem using determinants of the submatrixes of the coefficients' one?
