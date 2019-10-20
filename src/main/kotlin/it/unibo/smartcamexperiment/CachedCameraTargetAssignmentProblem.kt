@@ -8,8 +8,9 @@ import it.unibo.alchemist.model.interfaces.VisibleNode
 
 /*
  * Tried every possible hack I could imagine.
- * It does not work, for some reason the cameras are simply solving different problems even when they are fully connected.
- * They quickly get completely desynchronized and the hit ratio goes to zero...
+ * It does not work, the cameras are simply solving different problems with different inputs even when they are fully connected.
+ * They quickly get completely desynchronized and the hit ratio goes to zero.
+ * A different solution is needed
  */
 
 class CachedCameraTargetAssignmentProblem : CameraTargetAssignmentProblem<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>() {
