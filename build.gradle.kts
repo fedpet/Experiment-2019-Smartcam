@@ -107,8 +107,8 @@ fun makeTest(
 }
 
 
-makeTest("showcase_ff_linpro_from_center")
-makeTest("showcase_ff_linpro_generic")
+makeTest("showcase_ff_linpro_from_center", effects="presentation.aes")
+makeTest("showcase_ff_linpro_generic", effects="presentation.aes")
 makeTest("forcefields")
 makeTest("fully_connected", name="launchGUI")
 
