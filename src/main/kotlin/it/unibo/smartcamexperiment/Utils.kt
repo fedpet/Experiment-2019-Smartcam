@@ -9,7 +9,7 @@ import org.protelis.lang.datatype.Tuple
 import kotlin.math.cos
 import kotlin.math.sin
 
-internal fun RandomGenerator.randomAngle() = 2 * Math.PI * nextDouble()
+fun RandomGenerator.randomAngle() = 2 * Math.PI * nextDouble()
 
 internal inline fun <reified P : Position<P>> Any?.toPosition(env: Environment<*, P>): P = when (this) {
     is P -> this
