@@ -3,8 +3,8 @@
 - [Solution](#solution)
 - [Links](#links)
 - [FF-LinPro showcase (LinPro with Force Field Exploration)](#ff-linpro-showcase-linpro-with-force-field-exploration)
-- [Simulations scenario](#simulations-scenario)
-- [Algorithms evaluated](#algorithms-evaluated)
+- [Scenario of the simulations](#scenario-of-the-simulations)
+  * [Evaluated algorithms](#evaluated-algorithms)
 - [Results](#results)
   * [By varying the cam/obj ratio](#by-varying-the-cam-obj-ratio)
   * [By varying the communication range](#by-varying-the-communication-range)
@@ -45,7 +45,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 ## FF-LinPro showcase (LinPro with Force Field Exploration)
 ![Showcase of LinPro with Force Field Exploration](video1.gif)
 
-## Simulations scenario
+## Scenario of the simulations
 | Variable                              | Default Value         |
 |---------------------------------------|---------------|
 | Duration of the simulation            | 2000 s        |
@@ -69,7 +69,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 
 ![Scenario](video2.gif)
 
-## Algorithms evaluated
+### Evaluated algorithms
 - FF-LinPro: LinPro with Force Field Exploration
 - ZZ-LinPro: LinPro with "ZigZag" exploration
 - FF-LinProF: Fair variant of LinPro
