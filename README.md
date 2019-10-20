@@ -15,6 +15,7 @@ Run `gradlew build` to compile.
   - Make pr to Alchemist with the fixed version of ZigZagRandomTarget2, RandomTarget, and ChangeTargetOnCollision. Make tests, remove them from here
   - CameraTargetAssignmentProblem (aka LinPro) handles the "fair" variant with.... commented code...
   - tests
+  - ProtelisUtils is unreadable
 - Improve performance of LinPro during simulations
   - ~~CachedCameraTargetAssignmentProblem doesn't work because cameras are not synchronized, find another method~~
   - The optimal solution for a round could probably be also the optimal solution for the next one, or a feasible one
