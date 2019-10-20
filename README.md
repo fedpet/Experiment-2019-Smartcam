@@ -46,7 +46,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 ![Showcase of LinPro with Force Field Exploration](video1.gif)
 
 ## Simulations scenario
-| Variable                              | Value         |
+| Variable                              | Default Value         |
 |---------------------------------------|---------------|
 | Duration of the simulation            | 2000 s        |
 | Size of the arena                     | 500 x 500 m   |
