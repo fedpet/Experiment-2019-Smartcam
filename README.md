@@ -1,4 +1,15 @@
 # Experiment-2019-Smartcam
+- [Problem](#problem)
+- [Solution - LinPro](#solution---linpro)
+- [Links](#links)
+- [FF-LinPro showcase (LinPro with Force Field Exploration)](#ff-linpro-showcase-linpro-with-force-field-exploration)
+- [Simulations scenario](#simulations-scenario)
+- [Algorithms evaluated](#algorithms-evaluated)
+- [Results](#results)
+  * [By varying the cam/obj ratio](#by-varying-the-cam-obj-ratio)
+  * [By varying the communication range](#by-varying-the-communication-range)
+- [Getting Started](#getting-started)
+- [TODO](#todo)
 
 ## Problem
 - We have a set of mobile sensors (smartcameras) which can communicate and detect targets in their field of view.
@@ -51,7 +62,7 @@ Models the problem using linear programming, achieves k-coverage minimizing the 
 
 ## Results
 Error bars indicate the standard deviations. The charts show the percentage of the time during which k-coverage was achieved.
-### By varying the cam/obj ratio
+### By varying the cam-obj ratio
 ![Performance of the algorithms by varying the cam/obj ratio](chart_cam_obj_ratio.png)
 ### By varying the communication range
 ![Performance of the algorithms by varying the comm range](chart_commrange.png)
