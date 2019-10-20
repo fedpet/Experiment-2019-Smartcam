@@ -30,11 +30,10 @@ Each camera executes a 1-hop broadcast of its position and the positions of the 
 This approach is inspired by ["Cooperative Multi-robot Observation
 of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 
-Each camera produces a virtual repulsive force field.
-Each object (of which the position is known) produces a virtual attractive force field.
-Each camera has a "force of will" which is used to prevent the balancing of the forces, which would otherwise result in a static situation.
-
-The summation of the forces determine the direction of the camera. In this way the cameras tend to explore the arena homogeneously, while staying close to potential targets.
+- Each camera produces a virtual repulsive force field.
+- Each object (of which the position is known) produces a virtual attractive force field.
+- Each camera has a "force of will" which is used to prevent the balancing of the forces, which would otherwise result in a static situation.
+- The summation of the forces determine the direction of the camera. In this way the cameras tend to explore the arena homogeneously, while staying close to potential targets.
 
 
 ## Links
