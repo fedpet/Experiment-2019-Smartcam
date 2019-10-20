@@ -26,6 +26,7 @@ public def log(msg) {
 }
 
 
+
 public def avoidCameraCollision(target, localTargets) {
     if(target != noTarget() && localTargets.contains(target)) {
         let assignedTs = nbr(target)

@@ -46,5 +46,6 @@ rep(info <- [noTarget(), buildOverlapRelationsGraph(1, 0.995, 0.95)]) {
     };
     //env.put("myTarget", myTarget)
     followOrExplore(myTarget, zigZagExploration)
+    avoidCameraCollision(myTarget, onlyTargets(localObjects))
     [myTarget, graph]
 }

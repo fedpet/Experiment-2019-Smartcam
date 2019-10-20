@@ -9,7 +9,7 @@ import java.lang.Math.PI
 
 
 def getForceOfWill() {
-    10
+    40
 }
 
 def getRepulsiveForce(distance) {
@@ -17,7 +17,11 @@ def getRepulsiveForce(distance) {
 }
 
 def getAttractiveForce(distance) {
-    - ((getMaxCamerasPerTarget() * getRepulsiveForce(distance) * 4) / max(1, distance))
+    if(distance >= getFoVDistance()/3) {
+        - ((getMaxCamerasPerTarget() * getRepulsiveForce(distance) * 4) / max(1, distance))
+    } else {
+        0
+    }
 }
 
 def getEnvironmentBoundaryForce(envPoint) {
@@ -51,10 +55,15 @@ public def fieldExploration() {
     let envBoundariesForce = getEnvironmentBoundariesForce()
 
     let targetForces = unionHood PlusSelf(nbr(getVision())).map {
-        getAttractiveForce(distanceFromTarget(it)) * unitVector(self.getCoordinates() - posToTuple(it.getPosition()))
-    }.reduce([0,0]) { a,b -> a + b }
+            getAttractiveForce(distanceFromTarget(it)) * unitVector(self.getCoordinates() - posToTuple(it.getPosition()))
+        }.reduce([0,0]) { a,b -> a + b }
 
-    let sumOfForces = sumHood(cameraForces) + envBoundariesForce + targetForces
+    let sumOfForces = sumHood(cameraForces) + envBoundariesForce
+    if(env.has("noAttractiveForces")){
+        0
+    } else {
+        sumOfForces = sumOfForces + targetForces
+    }
 
     rep(myDirectionAngle <- randomAngle()){
         let myDirection = angleToVersor(myDirectionAngle)
@@ -64,9 +73,12 @@ public def fieldExploration() {
         let augment = getMaxMovementSpeed() * 2 // make sure we try to go at max speed
         destination = destination + [augment * cos(newDirectionAngle), augment * sin(newDirectionAngle)]
         env.put("destination", destination)
-        //env.put("heading", destination)
-        envRemove("heading")
-        env.put("doSpin", true)
+        if(env.has("noSpin")){
+            env.put("heading", destination)
+        } else {
+            envRemove("heading")
+            env.put("doSpin", true)
+        }
         newDirectionAngle
     }
 }
@@ -79,3 +91,50 @@ public def zigZagExploration() {
     env.put("doZigZag", true)
     noTarget()
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* CODE FOR SLIDES
+def will() = 10
+
+def repulsion(dist) =
+    will() / 2 * ((getFoVDistance() * 2) ^ 2 / max(1, dist) ^ 2
+
+def attraction(dist) =
+    - (MaxCamsPerTarget() * repulsion(dist) * 4) / max(1, dist)
+
+public def fieldExploration() {
+    let myPos = self.getCoordinates()
+    let camForces = sumHood(repulsion(self.nbrRange()) * nbrVersor())
+    let targetForces = unionHood PlusSelf(nbr(getVision())).map {
+        attraction(distanceFrom(it)) * versor(myPos - it.getPosition())
+    }.reduce([0,0]) { a,b -> a + b }
+    rep(myDirection <- randomDirection()) {
+        let myForce = myDirection * will()
+        let destination = myPos + camForces + targetForces + myForce
+        destination - myPos
+    } yield { destination }
+}
+*/
