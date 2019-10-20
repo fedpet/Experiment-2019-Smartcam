@@ -17,13 +17,25 @@
 - Maximize efficency and in particular the k-coverage. K-Coverage is reached for one target as long as it's being observed by at least K sensors.
 
 ## Solution
-LinPro is a decentralized and self-adapting algorithm. It naturally supports adding and removing sensors and targets during runtime. Note: this project focuses on the *coordination*, security and vision related problems are not discussed.
-
+Here are proposed 2 approaches: LinPro and Force Field Exploration (FF). The algorithms are decentralized and self-adapting. They naturally supports adding and removing sensors and targets during runtime.
+Note: this project focuses on the *coordination*, security and vision related problems are not discussed.
+### LinPro
 The problem is modeled with linear programming: it achieves k-coverage minimizing the movements.
 
 LinPro requires that sensors know their own position in space, and that they can calculate the position of the targets detected. The positions must be coherent and in reference to a common positioning system.
 
 Each camera executes a 1-hop broadcast of its position and the positions of the targets seen. With the received data it solves the problem and follows the target indicated by the optimal solution.
+
+### Force Field Exploration
+This approach is inspired by ["Cooperative Multi-robot Observation
+of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
+
+Each camera produces a virtual repulsive force field.
+Each object (of which the position is known) produces a virtual attractive force field.
+Each camera has a "force of will" which is used to prevent the balancing of the forces, which would otherwise result in a static situation.
+
+The summation of the forces determine the direction of the camera. In this way the cameras tend to explore the arena homogeneously, while staying close to potential targets.
+
 
 ## Links
 - [My thesis](https://amslaurea.unibo.it/19092/) - Contains the formulation of LinPro and all the details. In italian because of bureocracy... Interesting things from chapter 3, page 22
