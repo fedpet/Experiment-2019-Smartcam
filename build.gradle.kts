@@ -102,16 +102,19 @@ fun makeTest(
                     dependsOn(name)
                 }
             }
-        } else {
-            args("-e", name)
         }
     }
 }
 
 
-makeTest("testperf", name="testperf")
-makeTest("forcefields", name="ff")
+makeTest("showcase_ff_linpro_from_center")
+makeTest("showcase_ff_linpro_generic")
+makeTest("forcefields")
 makeTest("fully_connected", name="launchGUI")
+
+// simulations used for the performances evaluation
 makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio"))
 makeTest("limited_connection_range", time = 2000.0, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
-defaultTasks("allSimulations")
+
+//defaultTasks("allSimulations")
+defaultTasks("showcase_ff_linpro_generic")

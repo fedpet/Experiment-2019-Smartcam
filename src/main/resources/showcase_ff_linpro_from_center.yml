@@ -1,0 +1,122 @@
+incarnation: protelis
+
+variables:
+  Algorithm: &Algorithm
+    type: ArbitraryVariable
+    parameters: ["ff_linpro"]
+  MaxCamerasPerTarget: &MaxCamerasPerTarget
+    formula: 2
+  CameraSpeed: &CameraSpeed
+    type: ListOf
+    parameters: [3]
+  HumanSpeed: &HumanSpeed
+    type: ArbitraryVariable
+    parameters: [1.4]
+  NumHumans: &NumHumans
+    formula: 30
+  NumCameras: &NumCameras
+    formula: 12
+  EnvironmentSize: &EnvironmentSize
+    type: ArbitraryVariable
+    parameters: [500]
+  HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
+    formula: EnvironmentSize / 2
+  NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations
+    formula: -HalfEnvironmentSize
+  NetworkConnectionMaxDistance: &NetworkConnectionMaxDistance
+    formula: EnvironmentSize * EnvironmentSize
+  FoVAngle: &FoVAngle
+    type: ArbitraryVariable
+    parameters: [60]
+  FoVDistance: &FoVDistance
+    type: ArbitraryVariable
+    parameters: [30]
+  RotationSpeed: &RotationSpeed
+    type: ArbitraryVariable
+    parameters: [36]
+
+environment:
+  type: Rectangular2DEnvironment
+  parameters: [*EnvironmentSize, *EnvironmentSize]
+
+network-model:
+  type: FullyConnected
+  parameters: []
+
+seeds:
+  scenario: 1
+  simulation: 1
+
+
+programs:
+  - &Camera
+    - time-distribution: 2
+      type: ChemicalReaction
+      actions:
+        - type: InitHeading
+          parameters: []
+        - type: See
+          parameters: [*FoVDistance, *FoVAngle, vision]
+        - type: HeadTowardTarget
+          parameters: [heading, *RotationSpeed]
+        - type: MoveToTarget
+          parameters: [destination, *CameraSpeed]
+    - time-distribution: 2
+      type: ChemicalReaction
+      conditions:
+        - type: MoleculeHasConcentration
+          parameters: [doZigZag, true]
+      actions:
+        - type: ZigZagMove2
+          parameters: [.inf, *CameraSpeed]
+    - time-distribution: 2
+      type: ChemicalReaction
+      conditions:
+        - type: MoleculeHasConcentration
+          parameters: [doSpin, true]
+      actions:
+        - type: Spin
+          parameters: [*RotationSpeed]
+    - time-distribution: 1
+      program: *Algorithm
+    - program: send
+
+
+
+displacements:
+  - in:
+      type: SpecificPositions2
+      parameters: [[200,0],[0,200],[-200,0],[0,-200]]
+    nodes:
+      type: CircleNode
+      parameters: [4]
+    contents:
+      - molecule: wanted
+        concentration: true
+  - in:
+      type: Circle
+      parameters: [*NumCameras, 0, 0, 0.1]
+    nodes:
+      type: ProtelisNode
+    contents:
+      - molecule: Target
+        concentration: "\"wanted\""
+      - molecule: MaxCamerasPerTarget
+        concentration: *MaxCamerasPerTarget
+      - molecule: FoVDistance
+        concentration: *FoVDistance
+      - molecule: EnvironmentSize
+        concentration: *EnvironmentSize
+      - molecule: MaxMovementSpeed
+        concentration: *CameraSpeed
+      - molecule: MaxRotationSpeed
+        concentration: *RotationSpeed
+      - molecule: noSpin
+        concentration: true
+      #- molecule: noAttractiveForces
+      #  concentration: true
+
+    programs:
+      - *Camera
+
+
