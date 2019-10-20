@@ -3,7 +3,7 @@ I'm sorry, the code is a mess but finishing my thesis in time took the priority.
 
 Run `gradlew build` to compile.
 
-`gradlew :showcase_ff_linpro_from_center`  and `gradlew :showcase_ff_linpro_generic`
+`gradlew showcase_ff_linpro_from_center`  and `gradlew showcase_ff_linpro_generic`
  to run the simulations shown during the presentation.
 
 ## TODO
