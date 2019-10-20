@@ -1,6 +1,6 @@
 # Experiment-2019-Smartcam
 - [Problem](#problem)
-- [Solution - LinPro](#solution---linpro)
+- [Solution](#solution)
 - [Links](#links)
 - [FF-LinPro showcase (LinPro with Force Field Exploration)](#ff-linpro-showcase-linpro-with-force-field-exploration)
 - [Simulations scenario](#simulations-scenario)
@@ -16,8 +16,12 @@
 - Cover an area in which there may be moving targets.
 - Maximize efficency and in particular the k-coverage. K-Coverage is reached for one target as long as it's being observed by at least K sensors.
 
-## Solution - LinPro
-Models the problem using linear programming, achieves k-coverage minimizing the movements.
+## Solution
+LinPro is a decentralized and self-adapting algorithm. It naturally supports adding and removing sensors and targets during runtime. Note: this project focuses on the *coordination*, security and vision related problems are not discussed.
+
+The problem is modeled with linear programming: it achieves k-coverage minimizing the movements.
+
+LinPro requires that sensors know their own position in space, and that they can calculate the position of the targets detected. The positions must be coherent and in reference to a common positioning system.
 
 ## Links
 - [My thesis](https://amslaurea.unibo.it/19092/) - Contains the formulation of LinPro and all the details. In italian because of bureocracy... Interesting things from chapter 3, page 22
