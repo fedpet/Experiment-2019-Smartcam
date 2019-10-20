@@ -29,6 +29,7 @@ Each camera executes a 1-hop broadcast of its position and the positions of the 
 - [My thesis](https://amslaurea.unibo.it/19092/) - Contains the formulation of LinPro and all the details. In italian because of bureocracy... Interesting things from chapter 3, page 22
 - [Online multi-object k-coverage with mobile smart cameras](https://doi.org/10.1145/3131885.3131909) - Contains the formal definition of k-coverage and some approaches for coordination algorithms
 - [Alchemist Simulator](https://github.com/AlchemistSimulator/Alchemist) - The simulator used in this experiment
+- [Protelis](http://protelis.github.io/) - The programming language based on "Aggregate Programming" used for the algorithms.
 
 ## FF-LinPro showcase (LinPro with Force Field Exploration)
 ![Showcase of LinPro with Force Field Exploration](video1.gif)
