@@ -99,7 +99,7 @@ Run `gradlew build` to compile.
 - Clean the mess
   - ZigZagMove2 should be fixed in newer versions of Alchemist, if not then make a pr
   - Same for LevyWalk
-  - InitHeading should be removed, the initial heading should become a constructor parameter of Node
+  - InitHeading should be removed, the initial heading should become a constructor parameter of CircleNode
   - AbstractConfigurableMoveNodeWithAccurateEuclideanDestination will then become useless and already included in Alchemist
   - Make pr to Alchemist with the fixed version of ZigZagRandomTarget2, RandomTarget, and ChangeTargetOnCollision. Make tests, remove them from here
   - CameraTargetAssignmentProblem (aka LinPro) handles the "fair" variant with.... commented code...
@@ -109,5 +109,5 @@ Run `gradlew build` to compile.
   - ~~CachedCameraTargetAssignmentProblem doesn't work because cameras are not synchronized, find another method~~
   - Caching solutions cannot work because the computational rounds are not synchronized.
   - The optimal solution for a round could probably be also the optimal solution for the next one, or a feasible one
-  - If the set of targets and cameras didn't change from the previous round, the previous optimal solution could be assumed to still be the optimal one. This is an approximation.
+  - If the set of targets and cameras hasn't changed since the previous round, the previous optimal solution could be assumed to still be the optimal one. This can be an approximation or an error, unless the speed of the drones is greater than that of the objects.
   - There exists faster algorithms than the simplex method to solve transportation problems. Hint: Kramer's theorem using determinants of the submatrixes of the coefficients' one?
