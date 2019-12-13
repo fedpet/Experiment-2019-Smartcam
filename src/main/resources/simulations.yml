@@ -4,37 +4,31 @@ variables:
   Seed: &Seed
     type: LinearVariable
     #default, min, max, step
-    parameters: [1, 1, 20, 1]
+    parameters: [1, 1, 100, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["zz_linpro"]
+    parameters: ["ff_linpro", "nocomm", "ff_nocomm", "bc_re", "sm_av", "zz_linpro", "ff_linpro", "zz_linproF", "ff_linproF"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
-    type: ListOf
+    type: ArbitraryVariable
     parameters: [3]
   HumanSpeed: &HumanSpeed
     type: ArbitraryVariable
     parameters: [1.4]
-  HumanDensity: &HumanDensity
-    type: ArbitraryVariable
-    parameters: [0.2] #potential targets per square meter
   HumansCamerasRatio: &HumansCamerasRatio
-    type: ListOf
-    parameters: [1]
+    type: ArbitraryVariable
+    parameters: [2, 1.5, 1, 0.5, 0.1]
   NumHumans: &NumHumans
-    formula: EnvironmentSize * HumanDensity
+    formula: 100
   NumCameras: &NumCameras
     formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
     type: ArbitraryVariable
-    parameters: [200]
-  HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
-    formula: EnvironmentSize / 2
-  NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations
-    formula: -HalfEnvironmentSize
-  NetworkConnectionMaxDistance: &NetworkConnectionMaxDistance
-    formula: EnvironmentSize * EnvironmentSize
+    parameters: [500]
+  ConnectionRange: &ConnectionRange
+    type: ArbitraryVariable
+    parameters: [800, 800, 200, 100, 50, 30, 20, 10, 5]
   FoVAngle: &FoVAngle
     type: ArbitraryVariable
     parameters: [60]
@@ -50,16 +44,18 @@ variables:
   WantedTimeDistribution: &WantedTimeDistribution # how many times per second the dice is rolled
     type: ArbitraryVariable
     parameters: [0.05]
+  HalfEnvironmentSize: &HalfEnvironmentSize # needed for calculations
+    formula: EnvironmentSize / 2
+  NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations
+    formula: -HalfEnvironmentSize
 
 environment:
   type: Rectangular2DEnvironment
   parameters: [*EnvironmentSize, *EnvironmentSize]
 
 network-model:
-  type: FullyConnected
-  parameters: []
-#  type: ConnectWithinDistance
-#  parameters: [*NetworkConnectionMaxDistance]
+  type: ConnectWithinDistance
+  parameters: [*ConnectionRange]
 
 seeds:
   scenario: *Seed
@@ -69,10 +65,10 @@ export:
   - time
   - type: CamerasKCoverage
     parameters: [vision, wanted, *MaxCamerasPerTarget]
-  - type: LogProgress
-    parameters: [vision, wanted]
   - type: DistanceTraveled
-    parameters: [vision]
+    parameters: ["CamDist", vision]
+  - type: DistanceTraveled
+    parameters: ["ObjDist", wanted]
 
 programs:
   - &Human
@@ -127,6 +123,9 @@ displacements:
     nodes:
       type: CircleNode
       parameters: [0.5]
+    contents:
+      - molecule: wanted
+        concentration: false
     programs:
       - *Human
   - in:
@@ -149,6 +148,8 @@ displacements:
         concentration: *CameraSpeed
       - molecule: MaxRotationSpeed
         concentration: *RotationSpeed
+      - molecule: noAttractiveForces
+        concentration: true
     programs:
       - *Camera
 
