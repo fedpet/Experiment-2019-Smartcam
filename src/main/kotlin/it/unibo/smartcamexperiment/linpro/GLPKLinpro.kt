@@ -17,6 +17,7 @@ private class ConstrainNameFactory(private val prefix: String) {
 
 /**
  * Linpro implementation with GLPK.
+ * Faster than Apache's but seems to be unstable. Expect occasional crashes and huge amount of console output.
  */
 class GLPKLinpro<S, D> : AbstractLinpro<S, D>() {
     private companion object {
@@ -24,7 +25,7 @@ class GLPKLinpro<S, D> : AbstractLinpro<S, D>() {
     }
 
     override fun solveLPProblem(builder: LPProblemBuilder.() -> Unit): DoubleArray {
-        //System.out.close()
+        //System.out.close() // avoid console output
         val constraintNameFactory = ConstrainNameFactory("c")
         val settings = object :
             LPProblemBuilder {

@@ -1,6 +1,7 @@
 package it.unibo.smartcamexperiment.linpro
 
 import it.unibo.smartcamexperiment.CameraTargetAssignmentProblem
+import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.min
 
@@ -13,6 +14,7 @@ abstract class AbstractLinpro<S, D> :
         sources: List<S>,
         destinations: List<D>,
         maxSourcesPerDestination: Int,
+        fair: Boolean,
         cost: (source: S, destination: D) -> Double
     ): Map<S, D> {
         if (sources.isEmpty() || destinations.isEmpty() || maxSourcesPerDestination <= 0) {
@@ -66,22 +68,23 @@ abstract class AbstractLinpro<S, D> :
                     coefficients[srcIdx * totalDestinations + dstIdx] = 1.0
                 }
 
-                // "STANDARD" constraints
-                addSmallerThanEqualsConstraint(coefficients, maxSourcesPerDestination.toDouble())
-                val minAm = min(1.0, floor(sources.size.toDouble() / destinations.size))
-                addBiggerThanEqualsConstraint(coefficients, minAm)
-
-                /*
-                // "FAIR" constraints, worse performance
-                val sourcesPerDestination = min(maxSourcesPerDestination.toDouble(), sources.size.toDouble() / destinations.size)
-                if (sources.size.toDouble() % destinations.size == 0.0) {
-                    // if we can save constraints we do so
-                    it.add(LinearConstraint(coefficients, Relationship.EQ, sourcesPerDestination))
+                if (!fair) {
+                    // "STANDARD" constraints
+                    addSmallerThanEqualsConstraint(coefficients, maxSourcesPerDestination.toDouble())
+                    val minAm = min(1.0, floor(sources.size.toDouble() / destinations.size))
+                    addBiggerThanEqualsConstraint(coefficients, minAm)
                 } else {
-                    it.add(LinearConstraint(coefficients, Relationship.GEQ, floor(sourcesPerDestination)))
-                    it.add(LinearConstraint(coefficients, Relationship.LEQ, ceil(sourcesPerDestination)))
+                    // "FAIR" constraints, worse k-cov performance
+                    val sourcesPerDestination =
+                        min(maxSourcesPerDestination.toDouble(), sources.size.toDouble() / destinations.size)
+                    if (sources.size.toDouble() % destinations.size == 0.0) {
+                        // if we can save constraints we do so
+                        addEqualsConstraint(coefficients, sourcesPerDestination)
+                    } else {
+                        addBiggerThanEqualsConstraint(coefficients, floor(sourcesPerDestination))
+                        addSmallerThanEqualsConstraint(coefficients, ceil(sourcesPerDestination))
+                    }
                 }
-                */
             }
             addNonNegativityConstraint()
         }

@@ -101,9 +101,9 @@ Run `gradlew build` to compile.
   - ~~Same for LevyWalk~~
   - ~~AbstractConfigurableMoveNodeWithAccurateEuclideanDestination will then become useless and already included in Alchemist~~
   - ~~Make pr to Alchemist with the fixed version of ZigZagRandomTarget2, RandomTarget, and ChangeTargetOnCollision. Make tests, remove them from here~~
-  - CameraTargetAssignmentProblem (aka LinPro) handles the "fair" variant with.... commented code...
+  - ~~CameraTargetAssignmentProblem (aka LinPro) handles the "fair" variant with.... commented code...~~
+  - There is duplicated Protelis code for the linpro variants.
   - InitHeading should be removed, the initial heading should become a constructor parameter of CircleNode
-  - tests
   - ProtelisUtils is unreadable
 - Improve performance of LinPro during simulations
   - ~~CachedCameraTargetAssignmentProblem doesn't work because cameras are not synchronized, find another method~~

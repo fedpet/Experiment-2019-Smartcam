@@ -198,18 +198,17 @@ class CameraTargetAssignmentProblemForProtelis {
          * See [CameraTargetAssignmentProblem.solve]
          */
         @JvmStatic
-        fun solve(cameras: Field<*>, targets: Tuple, maxCamerasPerDestination: Int): Map<String, VisibleNode<*, Euclidean2DPosition>> =
+        fun solve(cameras: Field<*>, targets: Tuple, maxCamerasPerDestination: Int, fair: Boolean): Map<String, VisibleNode<*, Euclidean2DPosition>> =
             problem.solve(
                 cameras.toCameras(),
                 targets.toTargets(),
-                maxCamerasPerDestination) { camera, target ->
-                camera.position.getDistanceTo(target.position)
-            }.mapKeys { it.key.uid }
+                maxCamerasPerDestination,
+                fair)
+            { camera, target -> camera.position.getDistanceTo(target.position) }.mapKeys { it.key.uid }
 
         /**
          * Just an adapter for protelis.
          * See [CameraTargetAssignmentProblem.solve]
-         */
         @JvmStatic
         fun solve(
             context: ExecutionContext,
@@ -227,6 +226,7 @@ class CameraTargetAssignmentProblemForProtelis {
                         cost,
                         listOf(camera, target)) as Double
             }.mapKeys { it.key.uid }
+         */
     }
 }
 

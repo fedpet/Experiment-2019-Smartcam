@@ -5,6 +5,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.GoalType
 
 /**
  * Linpro implementation with Apache's SimplexSolver.
+ * It is slow for big problems..
  */
 class ApacheLinpro<S, D> : AbstractLinpro<S, D>() {
     override fun solveLPProblem(builder: LPProblemBuilder.() -> Unit): DoubleArray {

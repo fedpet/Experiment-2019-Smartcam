@@ -20,17 +20,17 @@ class TestCameraTargetAssignmentProblem : FreeSpec() {
                     solver.solve(emptyMap(), 1) shouldBe emptyMap<String, String>()
                 }
                 "No sources" {
-                    solver.solve(emptyList(), listOf("da", "db"), 1,
+                    solver.solve(emptyList(), listOf("da", "db"), 1, false,
                         zeroCost()
                     ) shouldBe emptyMap<String, String>()
                 }
                 "No destinations" {
-                    solver.solve(listOf("sa", "sb"), emptyList(), 1,
+                    solver.solve(listOf("sa", "sb"), emptyList(), 1, false,
                         zeroCost()
                     ) shouldBe emptyMap<String, String>()
                 }
                 "Zero maxSourcesPerDestination" {
-                    solver.solve(listOf("sa", "sb"), listOf("da", "db"), 0,
+                    solver.solve(listOf("sa", "sb"), listOf("da", "db"), 0, false,
                         zeroCost()
                     ) shouldBe emptyMap<String, String>()
                 }
@@ -109,7 +109,8 @@ private fun <S, D> CameraTargetAssignmentProblem<S, D>.solve(data: Map<Pair<S, D
     solve(
         data.keys.map { it.first }.distinct(),
         data.keys.map { it.second }.distinct(),
-        maxSourcesPerDestination)
+        maxSourcesPerDestination,
+        false)
     {
         src, dst -> data.getOrElse(Pair(src, dst)) {
             fail("No cost defined from $src to $dst")
