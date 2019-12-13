@@ -9,8 +9,7 @@ import it.unibo.alchemist.model.interfaces.Position2D
 import it.unibo.alchemist.model.interfaces.VisibleNode
 import it.unibo.alchemist.model.interfaces.environments.EuclideanPhysics2DEnvironment
 import it.unibo.alchemist.protelis.AlchemistExecutionContext
-import it.unibo.smartcamexperiment.linpro.GLPKLinpro
-import org.apache.commons.math3.random.RandomGenerator
+import it.unibo.smartcamexperiment.linpro.ApacheLinpro
 import org.protelis.lang.datatype.DeviceUID
 import org.protelis.lang.datatype.Field
 import org.protelis.lang.datatype.FunctionDefinition
@@ -18,8 +17,6 @@ import org.protelis.lang.datatype.Tuple
 import org.protelis.lang.datatype.impl.ArrayTupleImpl
 import org.protelis.lang.interpreter.util.JavaInteroperabilityUtils
 import org.protelis.vm.ExecutionContext
-import java.lang.Math.toDegrees
-import java.lang.Math.toRadians
 import java.util.stream.Collectors
 import kotlin.math.cos
 import kotlin.math.sin
@@ -192,7 +189,7 @@ class ProtelisUtils {
  */
 class CameraTargetAssignmentProblemForProtelis {
     companion object {
-        private val problem = GLPKLinpro<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
+        private val problem = ApacheLinpro<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
         /**
          * Just an adapter for protelis which works for Euclidean2DPosition only.
          * See [CameraTargetAssignmentProblem.solve]
