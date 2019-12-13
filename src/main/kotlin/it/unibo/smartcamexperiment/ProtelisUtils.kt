@@ -9,6 +9,7 @@ import it.unibo.alchemist.model.interfaces.Position2D
 import it.unibo.alchemist.model.interfaces.VisibleNode
 import it.unibo.alchemist.model.interfaces.environments.EuclideanPhysics2DEnvironment
 import it.unibo.alchemist.protelis.AlchemistExecutionContext
+import it.unibo.smartcamexperiment.linpro.GLPKLinpro
 import org.apache.commons.math3.random.RandomGenerator
 import org.protelis.lang.datatype.DeviceUID
 import org.protelis.lang.datatype.Field
@@ -36,7 +37,8 @@ class ProtelisUtils {
          * The algorithm to calculate the best targets for the cameras.
          */
         @JvmField
-        val CameraTargetAssignmentProblem = CameraTargetAssignmentProblemForProtelis()
+        val CameraTargetAssignmentProblem =
+            CameraTargetAssignmentProblemForProtelis()
 
         /**
          * Get the position at [distance] centered in the field of fiew of the caller.
@@ -145,7 +147,12 @@ class ProtelisUtils {
             strengthenValue: Double,
             evaporationBaseFactor: Double,
             evaporationMovementFactor: Double) =
-            OverlapRelationsGraphForProtelis(context.deviceUID, strengthenValue, evaporationBaseFactor, evaporationMovementFactor)
+            OverlapRelationsGraphForProtelis(
+                context.deviceUID,
+                strengthenValue,
+                evaporationBaseFactor,
+                evaporationMovementFactor
+            )
 
         /**
          * Creates a [Tuple] from any collection.
@@ -185,7 +192,7 @@ class ProtelisUtils {
  */
 class CameraTargetAssignmentProblemForProtelis {
     companion object {
-        private val problem = CameraTargetAssignmentProblem<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
+        private val problem = GLPKLinpro<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
         /**
          * Just an adapter for protelis which works for Euclidean2DPosition only.
          * See [CameraTargetAssignmentProblem.solve]
@@ -234,7 +241,11 @@ class OverlapRelationsGraphForProtelis(
     evaporationMovementFactor: Double
 ) {
 
-    private val graph = OverlapRelationsGraph<DeviceUID>(strengthenValue, evaporationBaseFactor, evaporationMovementFactor)
+    private val graph = OverlapRelationsGraph<DeviceUID>(
+        strengthenValue,
+        evaporationBaseFactor,
+        evaporationMovementFactor
+    )
 
     /**
      * See [OverlapRelationsGraph#evaporateAllLinks].
@@ -308,7 +319,12 @@ private fun Collection<*>.toTuple(): Tuple = with(iterator()) { ArrayTupleImpl(*
 
 private fun <P : Position2D<P>> Position2D<P>.toTuple(): Tuple = ArrayTupleImpl(x, y)
 
-private fun Field<*>.toCameras() = stream().map { CameraAdapter(it.key, it.value) }.collect(Collectors.toList())
+private fun Field<*>.toCameras() = stream().map {
+    CameraAdapter(
+        it.key,
+        it.value
+    )
+}.collect(Collectors.toList())
 
 @Suppress("UNCHECKED_CAST") // it is checked
 fun Tuple.toAnyTargets(): List<VisibleNode<*, *>> =

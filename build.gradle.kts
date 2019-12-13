@@ -25,7 +25,9 @@ dependencies {
     implementation("it.unibo.alchemist:alchemist-smartcam:9.0.0")
     implementation("it.unibo.alchemist:alchemist-loading:9.0.0")
     implementation("com.yundom:kache:1.0.5")
+    implementation(fileTree("lib"))
     implementation(kotlin("stdlib-jdk8"))
+    testImplementation("io.kotlintest:kotlintest-runner-junit5:3.3.0")
 }
 
 configure<JavaPluginConvention> {
@@ -33,6 +35,9 @@ configure<JavaPluginConvention> {
 }
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 sourceSets.main.get().resources.setSrcDirs(listOf("src/main/resources", "src/main/protelis"))
