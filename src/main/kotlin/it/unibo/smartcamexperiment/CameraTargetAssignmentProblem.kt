@@ -1,5 +1,8 @@
 package it.unibo.smartcamexperiment
 
+import org.danilopianini.util.LinkedListSet
+import org.danilopianini.util.ListSet
+
 /**
  * Given a list of sources (cameras) and a list of destinations (targets), decides which camera gets which target.
  * @param <S> source type

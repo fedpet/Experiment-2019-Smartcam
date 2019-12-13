@@ -1,16 +1,29 @@
 package it.unibo.smartcamexperiment.linpro
 
 import it.unibo.smartcamexperiment.CameraTargetAssignmentProblem
+import org.danilopianini.util.ListSet
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.min
 
 /**
  * Base class for linpro implementations.
+ * It uses [LinproCache] to optimize performances.
  */
 abstract class AbstractLinpro<S, D> :
     CameraTargetAssignmentProblem<S, D> {
+    private val cache = LinproCache<S, D>()
     override fun solve(
+        sources: List<S>,
+        destinations: List<D>,
+        maxSourcesPerDestination: Int,
+        fair: Boolean,
+        cost: (source: S, destination: D) -> Double
+    ): Map<S, D> {
+        return cache.get(sources, destinations, maxSourcesPerDestination, fair, cost, this::solveProblem)
+    }
+
+    private fun solveProblem (
         sources: List<S>,
         destinations: List<D>,
         maxSourcesPerDestination: Int,

@@ -5,6 +5,7 @@ import it.unibo.alchemist.model.implementations.positions.Euclidean2DPosition
 import it.unibo.alchemist.model.interfaces.Environment
 import it.unibo.alchemist.model.interfaces.Position
 import org.apache.commons.math3.random.RandomGenerator
+import org.danilopianini.util.LinkedListSet
 import org.protelis.lang.datatype.Tuple
 import kotlin.math.cos
 import kotlin.math.sin
@@ -32,3 +33,5 @@ internal fun offsetPositionAtDistance(env: Environment<*, Euclidean2DPosition>, 
 
 internal fun closestPositionToTargetAtDistance(env: Environment<*, Euclidean2DPosition>, source: Euclidean2DPosition, target: Euclidean2DPosition, distance: Double) =
     offsetPositionAtDistance(env, target, source - target, distance)
+
+internal fun <T> Iterable<T>.toListSet() = LinkedListSet<T>(toList())

@@ -10,6 +10,8 @@ import it.unibo.alchemist.model.interfaces.VisibleNode
 import it.unibo.alchemist.model.interfaces.environments.EuclideanPhysics2DEnvironment
 import it.unibo.alchemist.protelis.AlchemistExecutionContext
 import it.unibo.smartcamexperiment.linpro.ApacheLinpro
+import org.danilopianini.util.LinkedListSet
+import org.danilopianini.util.ListSet
 import org.protelis.lang.datatype.DeviceUID
 import org.protelis.lang.datatype.Field
 import org.protelis.lang.datatype.FunctionDefinition
@@ -33,9 +35,8 @@ class ProtelisUtils {
         /**
          * The algorithm to calculate the best targets for the cameras.
          */
-        @JvmField
-        val CameraTargetAssignmentProblem =
-            CameraTargetAssignmentProblemForProtelis()
+        @JvmStatic
+        fun getLinproSolver() = CameraTargetAssignmentProblemForProtelis()
 
         /**
          * Get the position at [distance] centered in the field of fiew of the caller.
@@ -307,6 +308,18 @@ class CameraAdapter(
 
     override fun toString() =
         "Camera#$uid"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+        other as CameraAdapter
+        if (uid != other.uid) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return uid.hashCode()
+    }
 }
 
 /**
