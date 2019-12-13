@@ -13,16 +13,16 @@ variables:
   CameraSpeed: &CameraSpeed
     type: ArbitraryVariable
     parameters: [3]
-  HumanSpeed: &HumanSpeed
+  ObjectSpeed: &ObjectSpeed
     type: ArbitraryVariable
     parameters: [1.4]
-  HumansCamerasRatio: &HumansCamerasRatio
+  ObjectsCamerasRatio: &ObjectsCamerasRatio
     type: ArbitraryVariable
     parameters: [2, 1.5, 1, 0.5, 0.1]
-  NumHumans: &NumHumans
+  NumObjects: &NumObjects
     formula: 100
   NumCameras: &NumCameras
-    formula: NumHumans * HumansCamerasRatio
+    formula: NumObjects * ObjectsCamerasRatio
   EnvironmentSize: &EnvironmentSize
     type: ArbitraryVariable
     parameters: [500]
@@ -71,12 +71,12 @@ export:
     parameters: ["ObjDist", wanted]
 
 programs:
-  - &Human
+  - &Object
     - time-distribution: 1
       type: ChemicalReaction
       actions:
         - type: LevyWalk
-          parameters: [*HumanSpeed]
+          parameters: [*ObjectSpeed]
     - time-distribution: *WantedTimeDistribution
       type: ChemicalReaction
       actions:
@@ -119,7 +119,7 @@ programs:
 displacements:
   - in:
       type: Rectangle
-      parameters: [*NumHumans, *NegHalfEnvironmentSize, *NegHalfEnvironmentSize, *EnvironmentSize, *EnvironmentSize]
+      parameters: [*NumObjects, *NegHalfEnvironmentSize, *NegHalfEnvironmentSize, *EnvironmentSize, *EnvironmentSize]
     nodes:
       type: CircleNode
       parameters: [0.5]
@@ -127,7 +127,7 @@ displacements:
       - molecule: wanted
         concentration: false
     programs:
-      - *Human
+      - *Object
   - in:
       type: Rectangle
       parameters: [*NumCameras, *NegHalfEnvironmentSize, *NegHalfEnvironmentSize, *EnvironmentSize, *EnvironmentSize]
