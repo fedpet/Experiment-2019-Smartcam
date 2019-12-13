@@ -3,6 +3,9 @@ package it.unibo.smartcamexperiment.linpro
 import org.apache.commons.math3.optim.linear.*
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType
 
+/**
+ * Linpro implementation with Apache's SimplexSolver.
+ */
 class ApacheLinpro<S, D> : AbstractLinpro<S, D>() {
     override fun solveLPProblem(builder: LPProblemBuilder.() -> Unit): DoubleArray {
         val settings = object :

@@ -90,8 +90,8 @@ programs:
         - type: MoleculeHasConcentration
           parameters: [doZigZag, true]
       actions:
-        - type: ZigZagMove2
-          parameters: [.inf, *CameraSpeed]
+        - type: ZigZagMove
+          parameters: [999999, *CameraSpeed]
     - time-distribution: 2
       type: ChemicalReaction
       conditions:

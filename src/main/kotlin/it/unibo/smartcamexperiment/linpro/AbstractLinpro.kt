@@ -4,6 +4,9 @@ import it.unibo.smartcamexperiment.CameraTargetAssignmentProblem
 import kotlin.math.floor
 import kotlin.math.min
 
+/**
+ * Base class for linpro implementations.
+ */
 abstract class AbstractLinpro<S, D> :
     CameraTargetAssignmentProblem<S, D> {
     override fun solve(

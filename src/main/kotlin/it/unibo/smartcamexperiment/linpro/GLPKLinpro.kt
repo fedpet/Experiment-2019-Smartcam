@@ -15,6 +15,9 @@ private class ConstrainNameFactory(private val prefix: String) {
 }
 
 
+/**
+ * Linpro implementation with GLPK.
+ */
 class GLPKLinpro<S, D> : AbstractLinpro<S, D>() {
     private companion object {
         val SOLVER: LinearProgramSolver = SolverFactory.newDefault()

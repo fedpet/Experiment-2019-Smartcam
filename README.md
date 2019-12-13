@@ -97,12 +97,12 @@ Run `gradlew build` to compile.
 
 ## TODO
 - Clean the mess
-  - ZigZagMove2 should be fixed in newer versions of Alchemist, if not then make a pr
-  - Same for LevyWalk
-  - InitHeading should be removed, the initial heading should become a constructor parameter of CircleNode
-  - AbstractConfigurableMoveNodeWithAccurateEuclideanDestination will then become useless and already included in Alchemist
-  - Make pr to Alchemist with the fixed version of ZigZagRandomTarget2, RandomTarget, and ChangeTargetOnCollision. Make tests, remove them from here
+  - ~~ZigZagMove2 should be fixed in newer versions of Alchemist, if not then make a pr~~
+  - ~~Same for LevyWalk~~
+  - ~~AbstractConfigurableMoveNodeWithAccurateEuclideanDestination will then become useless and already included in Alchemist~~
+  - ~~Make pr to Alchemist with the fixed version of ZigZagRandomTarget2, RandomTarget, and ChangeTargetOnCollision. Make tests, remove them from here~~
   - CameraTargetAssignmentProblem (aka LinPro) handles the "fair" variant with.... commented code...
+  - InitHeading should be removed, the initial heading should become a constructor parameter of CircleNode
   - tests
   - ProtelisUtils is unreadable
 - Improve performance of LinPro during simulations

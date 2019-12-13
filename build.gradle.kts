@@ -19,11 +19,11 @@ repositories {
 }
 
 dependencies {
-    implementation("it.unibo.alchemist:alchemist:9.0.0")
-    implementation("it.unibo.alchemist:alchemist-implementationbase:9.0.0")
-    implementation("it.unibo.alchemist:alchemist-interfaces:9.0.0")
-    implementation("it.unibo.alchemist:alchemist-smartcam:9.0.0")
-    implementation("it.unibo.alchemist:alchemist-loading:9.0.0")
+    implementation("it.unibo.alchemist:alchemist:9.3.0")
+    implementation("it.unibo.alchemist:alchemist-implementationbase:9.3.0")
+    implementation("it.unibo.alchemist:alchemist-interfaces:9.3.0")
+    implementation("it.unibo.alchemist:alchemist-smartcam:9.3.0")
+    implementation("it.unibo.alchemist:alchemist-loading:9.3.0")
     implementation("com.yundom:kache:1.0.5")
     implementation(fileTree("lib"))
     implementation(kotlin("stdlib-jdk8"))

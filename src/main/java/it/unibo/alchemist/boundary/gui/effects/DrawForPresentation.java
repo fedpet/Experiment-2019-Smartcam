@@ -1,18 +1,18 @@
 package it.unibo.alchemist.boundary.gui.effects;
 
+import it.unibo.alchemist.boundary.wormhole.interfaces.IWormhole2D;
 import it.unibo.alchemist.model.implementations.actions.See;
 import it.unibo.alchemist.model.implementations.molecules.SimpleMolecule;
 import it.unibo.alchemist.model.implementations.positions.Euclidean2DPosition;
 import it.unibo.alchemist.model.interfaces.Environment;
 import it.unibo.alchemist.model.interfaces.Node;
 import it.unibo.alchemist.model.interfaces.Position;
+import it.unibo.alchemist.model.interfaces.Position2D;
 import it.unibo.alchemist.model.interfaces.environments.EuclideanPhysics2DEnvironment;
 import it.unibo.alchemist.model.interfaces.geometry.AwtShapeCompatible;
 import it.unibo.alchemist.model.interfaces.geometry.GeometricShape;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 
@@ -32,11 +32,14 @@ public final class DrawForPresentation implements Effect {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public <T, P extends Position<P>> void apply(final Graphics2D g, final Node<T> node, final Environment<T, P> environment, final double zoom, final int x, final int y) {
+    public <T, P extends Position2D<P>> void apply(Graphics2D g, Node<T> node, Environment<T, P> environment, IWormhole2D<P> wormhole) {
         if (environment instanceof EuclideanPhysics2DEnvironment) {
             @SuppressWarnings("unchecked") final EuclideanPhysics2DEnvironment<T> env = (EuclideanPhysics2DEnvironment<T>) environment;
-            drawShape(g, node, env, zoom, x, y);
-            drawFieldOfView(g, node, env, zoom, x, y);
+            final Point viewPoint = wormhole.getViewPoint(environment.getPosition(node));
+            final int x = viewPoint.x;
+            final int y = viewPoint.y;
+            drawShape(g, node, env, wormhole.getZoom(), x, y);
+            drawFieldOfView(g, node, env, wormhole.getZoom(), x, y);
         }
     }
 

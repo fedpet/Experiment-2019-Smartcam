@@ -7,7 +7,7 @@ variables:
     parameters: [1, 1, 20, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["nocomm", "ff_nocomm", "bc_re", "sm_av", "zz_linpro", "ff_linpro"]
+    parameters: ["zz_linpro", "nocomm", "ff_nocomm", "bc_re", "sm_av", "ff_linpro"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
@@ -104,8 +104,8 @@ programs:
         - type: MoleculeHasConcentration
           parameters: [doZigZag, true]
       actions:
-        - type: ZigZagMove2
-          parameters: [.inf, *CameraSpeed]
+        - type: ZigZagMove
+          parameters: [999999, *CameraSpeed]
     - time-distribution: 2
       type: ChemicalReaction
       conditions:
