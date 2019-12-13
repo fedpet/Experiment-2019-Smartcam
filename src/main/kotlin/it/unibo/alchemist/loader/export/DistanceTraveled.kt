@@ -12,6 +12,7 @@ import it.unibo.alchemist.model.interfaces.Time
  * Extracts the sum of the distances traveled by each node optionally filtering the ones containing [filterByMolecule].
  */
 class DistanceTraveled<T, P : Position<P>> @JvmOverloads constructor(
+    private val exportName: String = "distance",
     private val filterByMolecule: Molecule? = null
 ) : Extractor {
     private val nodeToPosition = MapMaker().weakKeys().makeMap<Node<T>, P>()
@@ -30,9 +31,5 @@ class DistanceTraveled<T, P : Position<P>> @JvmOverloads constructor(
         }.sum().let { doubleArrayOf(it) }
     }
 
-    override fun getNames() = NAME
-
-    companion object {
-        private val NAME = listOf("distance")
-    }
+    override fun getNames() = listOf(exportName)
 }
