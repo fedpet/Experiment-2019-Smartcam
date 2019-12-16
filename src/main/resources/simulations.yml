@@ -7,7 +7,7 @@ variables:
     parameters: [1, 1, 100, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["nocomm", "ff_nocomm", "bc_re", "sm_av", "zz_linpro", "ff_linpro", "zz_linproF", "ff_linproF"]
+    parameters: ["zz_linpro", "ff_linpro", "zz_linproF", "ff_linproF", "ff_nocomm", "nocomm", "sm_av", "bc_re"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
@@ -17,8 +17,9 @@ variables:
     type: ArbitraryVariable
     parameters: [1.4]
   ObjectsCamerasRatio: &ObjectsCamerasRatio
-    type: ArbitraryVariable
-    parameters: [2, 1.5, 1, 0.5, 0.1]
+    type: LinearVariable
+    #default, min, max, step
+    parameters: [1, 0.1, 1, 0.1]
   NumObjects: &NumObjects
     formula: 100
   NumCameras: &NumCameras
@@ -28,7 +29,7 @@ variables:
     parameters: [500]
   ConnectionRange: &ConnectionRange
     type: ArbitraryVariable
-    parameters: [800, 800, 200, 100, 50, 30, 20, 10, 5]
+    parameters: [200, 10, 25, 50, 100, 200]
   FoVAngle: &FoVAngle
     type: ArbitraryVariable
     parameters: [60]

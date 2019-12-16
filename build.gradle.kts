@@ -118,7 +118,7 @@ makeTest("showcase_ff_linpro_generic", effects="presentation.aes")
 makeTest("fully_connected", name="launchGUI")
 
 // simulations used for the performances evaluation
-makeTest("simulations", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio", "ConnectionRange"))
+makeTest("simulations", time = 2000.0, vars = setOf("Seed", "Algorithm", "ObjectsCamerasRatio", "ConnectionRange"))
 //makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio"))
 //makeTest("limited_connection_range", time = 2000.0, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
 
