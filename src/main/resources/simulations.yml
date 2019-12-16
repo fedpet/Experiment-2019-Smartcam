@@ -124,9 +124,6 @@ displacements:
     nodes:
       type: CircleNode
       parameters: [0.5]
-    contents:
-      - molecule: wanted
-        concentration: false
     programs:
       - *Object
   - in:
