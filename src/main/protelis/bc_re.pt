@@ -20,11 +20,11 @@ rep(myTarget <- noTarget()) {
     let localTargets = getLocalTargets()
     let allTargets = nbr(localTargets)
     let possibleTarget = closestTarget(elementsWithLeastSources(allTargets))
-    myTarget = if(myTarget == noTarget() || !localTargets.contains(myTarget)) {
+    let newTarget = if(myTarget == noTarget() || !localTargets.contains(myTarget)) {
         possibleTarget
     } else {
         localTargets.get(localTargets.indexof(myTarget)) // updated position
     }
-    followOrExplore(myTarget, zigZagExploration)
-    avoidCameraCollision(myTarget, localTargets)
+    followOrExplore(newTarget, zigZagExploration)
+    avoidCameraCollision(newTarget, localTargets)
 }

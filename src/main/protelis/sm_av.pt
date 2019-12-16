@@ -39,13 +39,13 @@ rep(info <- [noTarget(), buildOverlapRelationsGraph(1, 0.995, 0.95)]) {
         .union(onlyTargets(localObjects))
     //env.put("allTargets", allTargets)
 
-    myTarget = if(myTarget == noTarget() || !allTargets.contains(myTarget)) {
+    let newTarget = if(myTarget == noTarget() || !allTargets.contains(myTarget)) {
         closestTarget(allTargets)
     } else {
         allTargets.get(allTargets.indexof(myTarget)) // updated position
     };
-    //env.put("myTarget", myTarget)
-    followOrExplore(myTarget, zigZagExploration)
-    avoidCameraCollision(myTarget, onlyTargets(localObjects))
-    [myTarget, graph]
+    //env.put("myTarget", newTarget)
+    followOrExplore(newTarget, zigZagExploration)
+    avoidCameraCollision(newTarget, onlyTargets(localObjects))
+    [newTarget, graph]
 }
