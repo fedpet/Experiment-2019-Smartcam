@@ -1,6 +1,7 @@
 package it.unibo.smartcamexperiment.linpro
 
 import org.danilopianini.util.LinkedListSet
+import kotlin.system.exitProcess
 
 /**
  * Basic cache which takes into account only the last input.
@@ -8,8 +9,9 @@ import org.danilopianini.util.LinkedListSet
  * See [CameraTargetAssignmentProblem] for a description of the parameters.
  */
 class LinproCache<S, D> {
-    private var lastInput = Input<S, D>(emptySet(), emptySet(), 0, false) { _, _ -> 0.0 }
+    private var lastInput = Input<S, D>(emptySet(), emptySet(), 0, false)
     private var lastResult = emptyMap<S, D>()
+    private var tid = -1L
 
     /**
      * Get the cached result, or compute a new one if it is not present.
@@ -27,42 +29,28 @@ class LinproCache<S, D> {
                         fair: Boolean,
                         cost: (source: S, destination: D) -> Double) -> Map<S, D>
     ): Map<S, D> {
+        if(tid == -1L){
+            tid = Thread.currentThread().id
+        } else if(tid != Thread.currentThread().id) {
+            throw IllegalAccessException("This is not thread-safe!")
+        }
         val destsSet = LinkedListSet(destinations)
-        val newInput = Input(sources.toSet(), destsSet, maxSourcesPerDestination, fair, cost)
+        val newInput = Input(sources.toSet(), destsSet, maxSourcesPerDestination, fair)
         return if (lastInput != newInput) {
             lastInput = newInput
             lastResult = calculate(sources, destinations, maxSourcesPerDestination, fair, cost)
             lastResult
         } else {
             // return updated positions
-            lastResult.mapValues { entry -> destsSet[destsSet.indexOf(entry.value)] }
+            lastResult.mapValues {
+                destsSet[destsSet.indexOf(it.value)]
+            }
         }
     }
 
-    private class Input<S, D>(
-        private val sources: Set<S>,
-        private val destinations: Set<D>,
-        private val maxSourcesPerDestination: Int,
-        private val fair: Boolean,
-        cost: (source: S, destination: D) -> Double) {
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
-            other as Input<*, *>
-            if (sources != other.sources) return false
-            if (destinations != other.destinations) return false
-            if (maxSourcesPerDestination != other.maxSourcesPerDestination) return false
-            if (fair != other.fair) return false
-            return true
-        }
-
-        override fun hashCode(): Int {
-            var result = sources.hashCode()
-            result = 31 * result + destinations.hashCode()
-            result = 31 * result + maxSourcesPerDestination
-            result = 31 * result + fair.hashCode()
-            return result
-        }
-    }
+    private data class Input<S, D>(
+        val sources: Set<S>,
+        val destinations: Set<D>,
+        val maxSourcesPerDestination: Int,
+        val fair: Boolean)
 }

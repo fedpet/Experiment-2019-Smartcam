@@ -189,43 +189,18 @@ class ProtelisUtils {
  * See [CameraTargetAssignmentProblem].
  */
 class CameraTargetAssignmentProblemForProtelis {
-    companion object {
-        private val problem = ApacheLinpro<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
-        /**
-         * Just an adapter for protelis which works for Euclidean2DPosition only.
-         * See [CameraTargetAssignmentProblem.solve]
-         */
-        @JvmStatic
-        fun solve(cameras: Field<*>, targets: Tuple, maxCamerasPerDestination: Int, fair: Boolean): Map<String, VisibleNode<*, Euclidean2DPosition>> =
-            problem.solve(
-                cameras.toCameras(),
-                targets.toTargets(),
-                maxCamerasPerDestination,
-                fair)
-            { camera, target -> camera.position.getDistanceTo(target.position) }.mapKeys { it.key.uid }
-
-        /**
-         * Just an adapter for protelis.
-         * See [CameraTargetAssignmentProblem.solve]
-        @JvmStatic
-        fun solve(
-            context: ExecutionContext,
-            cameras: Field<*>,
-            targets: Tuple,
-            maxCamerasPerDestination: Int,
-            cost: FunctionDefinition
-        ): Map<String, VisibleNode<*, *>> =
-            problem.solve(
-                cameras.toCameras(),
-                targets.toTargets(),
-                maxCamerasPerDestination) {
-                    camera, target -> JavaInteroperabilityUtils.runProtelisFunctionWithJavaArguments(
-                        context,
-                        cost,
-                        listOf(camera, target)) as Double
-            }.mapKeys { it.key.uid }
-         */
-    }
+    private val problem = ApacheLinpro<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
+    /**
+     * Just an adapter for protelis which works for Euclidean2DPosition only.
+     * See [CameraTargetAssignmentProblem.solve]
+     */
+    fun solve(cameras: Field<*>, targets: Tuple, maxCamerasPerDestination: Int, fair: Boolean): Map<String, VisibleNode<*, Euclidean2DPosition>> =
+        problem.solve(
+            cameras.toCameras(),
+            targets.toTargets(),
+            maxCamerasPerDestination,
+            fair)
+        { camera, target -> camera.position.getDistanceTo(target.position) }.mapKeys { it.key.uid }
 }
 
 /**
