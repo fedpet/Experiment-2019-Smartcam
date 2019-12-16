@@ -17,9 +17,8 @@ variables:
     type: ArbitraryVariable
     parameters: [1.4]
   ObjectsCamerasRatio: &ObjectsCamerasRatio
-    type: LinearVariable
-    #default, min, max, step
-    parameters: [1, 0.1, 1, 0.1]
+    type: ArbitraryVariable
+    parameters: [1, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
   NumObjects: &NumObjects
     formula: 100
   NumCameras: &NumCameras
