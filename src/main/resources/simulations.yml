@@ -50,8 +50,8 @@ variables:
     formula: -HalfEnvironmentSize
 
 environment:
-  type: Rectangular2DEnvironment
-  parameters: [*EnvironmentSize, *EnvironmentSize]
+  type: SmartcamEnvironment
+  parameters: [*EnvironmentSize, *EnvironmentSize, vision]
 
 network-model:
   type: ConnectWithinDistance
@@ -66,9 +66,7 @@ export:
   - type: CamerasKCoverage
     parameters: [vision, wanted, *MaxCamerasPerTarget]
   - type: DistanceTraveled
-    parameters: ["CamDist", vision]
-  - type: DistanceTraveled
-    parameters: ["ObjDist", wanted]
+    parameters: []
 
 programs:
   - &Object

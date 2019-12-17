@@ -98,10 +98,10 @@ fun makeTest(
         if (effects != null) {
             args("-g", "effects/${effects}")
         }
+        args("-e", "data/${name}")
         if (vars.isNotEmpty()) {
             args("-b") // background
             args("-var", *vars.toTypedArray())
-            args("-e", "data/${name}")
             tasks {
                 "allSimulations" {
                     dependsOn(name)
@@ -119,6 +119,7 @@ makeTest("fully_connected", name="launchGUI")
 
 // simulations used for the performances evaluation
 makeTest("simulations", time = 2000.0, vars = setOf("Seed", "Algorithm", "CamObjRatio", "CommunicationRange"))
+makeTest("simulations", name="simgui")
 //makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio"))
 //makeTest("limited_connection_range", time = 2000.0, vars = setOf("Seed", "Algorithm", "ConnectionRange"))
 

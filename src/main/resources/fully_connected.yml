@@ -69,10 +69,6 @@ export:
   - time
   - type: CamerasKCoverage
     parameters: [vision, wanted, *MaxCamerasPerTarget]
-  - type: LogProgress
-    parameters: [vision, wanted]
-  - type: DistanceTraveled
-    parameters: [vision]
 
 programs:
   - &Human
