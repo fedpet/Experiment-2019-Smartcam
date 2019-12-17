@@ -7,6 +7,7 @@ import it.unibo.alchemist.model.interfaces.Position
 import it.unibo.alchemist.model.interfaces.Reaction
 import it.unibo.alchemist.model.interfaces.Time
 import it.unibo.alchemist.model.interfaces.VisibleNode
+import it.unibo.smartcamexperiment.toBoolean
 import java.util.*
 import kotlin.math.max
 
@@ -55,7 +56,7 @@ class CamerasKCoverage<P : Position<P>>(
 
     override fun getNames() = names
 
-    private fun Node<*>.isTarget() = contains(targetMolecule)
+    private fun Node<*>.isTarget() = contains(targetMolecule) && getConcentration(targetMolecule).toBoolean()
 
     private fun Node<*>.isCamera() = contains(visionMolecule)
 

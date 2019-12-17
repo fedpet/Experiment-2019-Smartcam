@@ -35,3 +35,16 @@ internal fun closestPositionToTargetAtDistance(env: Environment<*, Euclidean2DPo
     offsetPositionAtDistance(env, target, source - target, distance)
 
 internal fun <T> Iterable<T>.toListSet() = LinkedListSet<T>(toList())
+
+fun Any?.toBooleanOrNull(): Boolean? =
+    when (this) {
+        null -> this
+        is Boolean -> this
+        is Int -> !equals(0)
+        is Double -> compareTo(0.0).toBoolean()
+        is Number -> toDouble().toBoolean()
+        is String -> with(decapitalize()) { equals("true") || equals("on") || equals("yes") || toDoubleOrNull().toBooleanOrNull() ?: false }
+        else -> null
+    }
+
+fun Any?.toBoolean() = toBooleanOrNull() ?: throw IllegalArgumentException("Failed to convert $this to Boolean")

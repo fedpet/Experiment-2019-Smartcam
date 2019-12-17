@@ -335,16 +335,3 @@ private fun Tuple.toPosition(): Euclidean2DPosition {
     require(x is Double && y is Double)
     return Euclidean2DPosition(x, y)
 }
-
-private fun Any?.toBooleanOrNull(): Boolean? =
-    when (this) {
-        null -> this
-        is Boolean -> this
-        is Int -> !equals(0)
-        is Double -> compareTo(0.0).toBoolean()
-        is Number -> toDouble().toBoolean()
-        is String -> with(decapitalize()) { equals("true") || equals("on") || equals("yes") || toDoubleOrNull().toBooleanOrNull() ?: false }
-        else -> null
-    }
-
-private fun Any?.toBoolean() = toBooleanOrNull() ?: throw IllegalArgumentException("Failed to convert $this to Boolean")
