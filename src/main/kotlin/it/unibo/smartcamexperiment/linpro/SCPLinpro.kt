@@ -20,10 +20,17 @@ private class ConstrainNameFactory(private val prefix: String) {
  * Faster than Apache's but seems to be unstable. Expect occasional crashes and huge amount of console output.
  */
 class SCPLinpro<S, D> : AbstractLinpro<S, D>() {
-    private val solver: LinearProgramSolver = SolverFactory.newDefault()
+    companion object {
+        fun isAvailable() = SolverFactory.newDefault() != null
+    }
+    private val solver: LinearProgramSolver = SolverFactory.newDefault() ?: throw IllegalAccessException("SCPLinpro is not available, try ApacheLinpro instead")
+    init {
+        if (solver.javaClass.simpleName.equals("GLPKSolver", ignoreCase = true)) {
+            System.out.close() // avoid the HUGE console output of GPLK
+        }
+    }
 
     override fun solveLPProblem(builder: LPProblemBuilder.() -> Unit): DoubleArray {
-        //System.out.close() // avoid console output
         val constraintNameFactory = ConstrainNameFactory("c")
         val settings = object :
             LPProblemBuilder {

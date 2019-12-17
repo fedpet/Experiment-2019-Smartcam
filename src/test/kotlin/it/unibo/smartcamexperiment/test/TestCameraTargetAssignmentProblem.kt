@@ -4,15 +4,18 @@ import io.kotlintest.fail
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.FreeSpec
 import it.unibo.smartcamexperiment.CameraTargetAssignmentProblem
-import it.unibo.smartcamexperiment.linpro.GLPKLinpro
+import it.unibo.smartcamexperiment.linpro.SCPLinpro
 import it.unibo.smartcamexperiment.linpro.ApacheLinpro
+import scpsolver.lpsolver.SolverFactory
 
 class TestCameraTargetAssignmentProblem : FreeSpec() {
     init {
-        val solvers = listOf<() -> CameraTargetAssignmentProblem<String, String>>(
-            ::ApacheLinpro,
-            ::GLPKLinpro
+        val solvers = mutableListOf<() -> CameraTargetAssignmentProblem<String, String>>(
+            ::ApacheLinpro
         )
+        if (SCPLinpro.isAvailable()) {
+            solvers.add(::SCPLinpro)
+        }
         solvers.forEach {
             val solver = it()
             solver.javaClass.simpleName - {

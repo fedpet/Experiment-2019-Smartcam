@@ -189,7 +189,7 @@ class ProtelisUtils {
  * See [CameraTargetAssignmentProblem].
  */
 class CameraTargetAssignmentProblemForProtelis {
-    private val problem = ApacheLinpro<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
+    private val problem = CameraTargetAssignmentProblem.getSolver<CameraAdapter, VisibleNode<*, Euclidean2DPosition>>()
     /**
      * Just an adapter for protelis which works for Euclidean2DPosition only.
      * See [CameraTargetAssignmentProblem.solve]

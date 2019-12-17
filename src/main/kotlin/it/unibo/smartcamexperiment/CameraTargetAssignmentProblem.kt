@@ -1,5 +1,8 @@
 package it.unibo.smartcamexperiment
 
+import it.unibo.smartcamexperiment.linpro.ApacheLinpro
+import it.unibo.smartcamexperiment.linpro.SCPLinpro
+
 /**
  * Given a list of sources (cameras) and a list of destinations (targets), decides which camera gets which target.
  * @param <S> source type
@@ -17,4 +20,9 @@ interface CameraTargetAssignmentProblem<S, D> {
      * @return a map from sources to destinations
      */
     fun solve(sources: List<S>, destinations: List<D>, maxSourcesPerDestination: Int, fair: Boolean, cost: (source: S, destination: D) -> Double): Map<S, D>
+
+    companion object {
+        fun <S, D> getSolver(): CameraTargetAssignmentProblem<S, D> =
+            if (SCPLinpro.isAvailable()) SCPLinpro() else ApacheLinpro()
+    }
 }
