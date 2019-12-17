@@ -20,9 +20,7 @@ private class ConstrainNameFactory(private val prefix: String) {
  * Faster than Apache's but seems to be unstable. Expect occasional crashes and huge amount of console output.
  */
 class SCPLinpro<S, D> : AbstractLinpro<S, D>() {
-    private companion object {
-        val SOLVER: LinearProgramSolver = SolverFactory.newDefault()
-    }
+    private val solver: LinearProgramSolver = SolverFactory.newDefault()
 
     override fun solveLPProblem(builder: LPProblemBuilder.() -> Unit): DoubleArray {
         //System.out.close() // avoid console output
