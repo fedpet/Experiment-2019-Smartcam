@@ -57,6 +57,6 @@ class SCPLinpro<S, D> : AbstractLinpro<S, D>() {
         if (settings.nonNegative) {
             problem.lowerbound = DoubleArray(problem.dimension)
         }
-        return SOLVER.solve(problem)
+        return solver.solve(problem)
     }
 }
