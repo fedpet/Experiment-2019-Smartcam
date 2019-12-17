@@ -16,17 +16,17 @@ variables:
   ObjectSpeed: &ObjectSpeed
     type: ArbitraryVariable
     parameters: [1.4]
-  ObjectsCamerasRatio: &ObjectsCamerasRatio
+  CamObjRatio: &CamObjRatio
     type: ArbitraryVariable
     parameters: [1, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
   NumObjects: &NumObjects
     formula: 100
   NumCameras: &NumCameras
-    formula: NumObjects * ObjectsCamerasRatio
+    formula: NumObjects * CamObjRatio
   EnvironmentSize: &EnvironmentSize
     type: ArbitraryVariable
     parameters: [500]
-  ConnectionRange: &ConnectionRange
+  CommunicationRange: &CommunicationRange
     type: ArbitraryVariable
     parameters: [200, 10, 25, 50, 100, 200]
   FoVAngle: &FoVAngle
@@ -55,7 +55,7 @@ environment:
 
 network-model:
   type: ConnectWithinDistance
-  parameters: [*ConnectionRange]
+  parameters: [*CommunicationRange]
 
 seeds:
   scenario: *Seed
