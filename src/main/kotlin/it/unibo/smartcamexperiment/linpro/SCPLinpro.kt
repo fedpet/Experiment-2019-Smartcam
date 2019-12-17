@@ -16,10 +16,10 @@ private class ConstrainNameFactory(private val prefix: String) {
 
 
 /**
- * Linpro implementation with GLPK.
+ * Linpro implementation with SCPSolver.
  * Faster than Apache's but seems to be unstable. Expect occasional crashes and huge amount of console output.
  */
-class GLPKLinpro<S, D> : AbstractLinpro<S, D>() {
+class SCPLinpro<S, D> : AbstractLinpro<S, D>() {
     private companion object {
         val SOLVER: LinearProgramSolver = SolverFactory.newDefault()
     }
