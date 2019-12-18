@@ -1,6 +1,7 @@
 import numpy as np
 import xarray as xr
 import re
+from math import ceil, sqrt
 
 def distance(val, ref):
     return abs(ref - val)
@@ -140,7 +141,7 @@ if __name__ == '__main__':
     directory = 'data'
     charts_dir = 'charts/'
     pickleOutput = 'data_summary'
-    experiments = ['fully_connected', 'limited_connection_range']
+    experiments = ['simulations']
     floatPrecision = '{: 0.2f}'
     seedVars = ['Seed']
     timeSamples = 2000
@@ -250,107 +251,147 @@ if __name__ == '__main__':
     kcovTrans = ['1-cov','2-cov','3-cov']
     algos = ['ff_linpro', 'zz_linpro','ff_linproF', 'zz_linproF', 'ff_nocomm', 'nocomm', 'sm_av', 'bc_re']#data.coords['Algorithm'].data.tolist()
     
-    dataFully = datasets['fully_connected']
-    dataFullyMean = dataFully.mean('time')
-    dataFullyKcovsMean = dataFullyMean.mean('Seed')
-    dataFullyKcovsStd = dataFullyMean.std('Seed')
+    data = datasets['simulations']
+    dataMean = data.mean('time')
+    dataKcovsMean = dataMean.mean('Seed')
+    dataKcovsStd = dataMean.std('Seed')
     
-    dataLim = datasets['limited_connection_range']
-    #print(dataLim)
-    dataLimMean = dataLim.mean('time')
-    dataLimKcovsMean = dataLimMean.mean('Seed')
-    dataLimKcovsStd = dataLimMean.std('Seed')
-    
-    simRatios = dataFully.coords['HumansCamerasRatio'].data.tolist()
+    simRatios = data.coords['CamObjRatio'].data.tolist()
     simRatios.reverse()
-    commRanges = dataLim.coords['ConnectionRange'].data.tolist()
+    commRanges = data.coords['CommunicationRange'].data.tolist()
     commRanges.reverse()
-    commRanges = [c for c in commRanges if c != 25] # not ready yet
     """""""""""""""""""""""""""
         kcoverage comparison
     """""""""""""""""""""""""""
-    fig = plt.figure(figsize=figure_size)
-    
-    for j,simRatio in enumerate(simRatios):
-        # rows, columns, index
-        ax = fig.add_subplot(2,2,j+1)
-        ax.set_ylim([0,1])
-        ax.set_title("Cam/Obj Ratio = {0:.1f}".format(simRatio))
-        if j%2 == 0:
-            ax.set_ylabel("Coverage (%)")
-        plt.xticks(rotation=35, ha='right')
-        ax.yaxis.grid(True)
+    for r,commRange in enumerate(commRanges):
+        fig = plt.figure(figsize=(22,10))
+        for j,simRatio in enumerate(simRatios):
+            # rows, columns, index
+            #size = ceil(sqrt(len(simRatios)))
+            rows = 2#size-1
+            cols = 5#size
+            ax = fig.add_subplot(rows, cols,j+1)
+            ax.set_ylim([0,1])
+            #if j<size:
+            ax.set_title("Cam/Obj Ratio = {0:.1f}".format(simRatio))
+            if j%cols == 0:
+                ax.set_ylabel("Coverage (%)")
+            plt.xticks(rotation=35, ha='right')
+            ax.yaxis.grid(True)
 
-        for i,s in enumerate(kcovVariables):
-            values = [dataFullyKcovsMean[s].sel(Algorithm=algoname, HumansCamerasRatio=simRatio).values.tolist() for algoname in algos]
-            errors = [dataFullyKcovsStd[s].sel(Algorithm=algoname, HumansCamerasRatio=simRatio).values.tolist() for algoname in algos]
-            ax.bar(algos, values, yerr=errors, label=kcovTrans[i], capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
-        if j == 1:
-            ax.legend()
-    plt.tight_layout()
-    fig.savefig(charts_dir + 'fc_kcov_comparison.pdf')
-    fig = plt.figure(figsize=figure_size)
+            for i,s in enumerate(kcovVariables):
+                values = [dataKcovsMean[s].sel(Algorithm=algoname, CamObjRatio=simRatio, CommunicationRange=commRange).values.tolist() for algoname in algos]
+                errors = [dataKcovsStd[s].sel(Algorithm=algoname, CamObjRatio=simRatio, CommunicationRange=commRange).values.tolist() for algoname in algos]
+                ax.bar(algos, values, yerr=errors, label=kcovTrans[i], capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
+            if j == cols-1:
+                ax.legend()
+        plt.tight_layout()
+        fig.savefig(charts_dir + 'KCov_CommRange-'+str(commRange)+'_CamObjRatio-variable.pdf')
+        plt.close(fig)
     
     algosWithoutNocomm = algos#[a for a in algos if a != "nocomm"]
-    for j,commRange in enumerate(commRanges):
-        # rows, columns, index
-        ax = fig.add_subplot(2,2,j+1)
-        ax.set_ylim([0,1])
-        ax.set_title("Comm Range = {0:.0f}".format(commRange))
-        if j%2 == 0:
-            ax.set_ylabel("Coverage (%)")
-        plt.xticks(rotation=35, ha='right')
-        ax.yaxis.grid(True)
+    for r,simRatio in enumerate(simRatios):
+        fig = plt.figure(figsize=(14,10))
+        for j,commRange in enumerate(commRanges):
+            # rows, columns, index
+            size = ceil(sqrt(len(commRanges)))
+            rows = size-1
+            cols = size
+            ax = fig.add_subplot(rows, cols,j+1)
+            ax.set_ylim([0,1])
+            ax.set_title("Comm Range = {0:.0f}".format(commRange))
+            if j%cols == 0:
+                ax.set_ylabel("Coverage (%)")
+            plt.xticks(rotation=35, ha='right')
+            ax.yaxis.grid(True)
 
-        for i,s in enumerate(kcovVariables):
-            values = [dataLimKcovsMean[s].sel(Algorithm=algoname, ConnectionRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
-            errors = [dataLimKcovsStd[s].sel(Algorithm=algoname, ConnectionRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
-            ax.bar(algosWithoutNocomm, values, yerr=errors, label=kcovTrans[i], capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
-        if j == 1:
-            ax.legend()
-    plt.tight_layout()
-    fig.savefig(charts_dir + 'lc_kcov_comparison.pdf')
-    fig = plt.figure(figsize=figure_size)
+            for i,s in enumerate(kcovVariables):
+                values = [dataKcovsMean[s].sel(Algorithm=algoname, CamObjRatio=simRatio, CommunicationRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
+                errors = [dataKcovsStd[s].sel(Algorithm=algoname, CamObjRatio=simRatio, CommunicationRange=commRange).values.tolist() for algoname in algosWithoutNocomm]
+                ax.bar(algosWithoutNocomm, values, yerr=errors, label=kcovTrans[i], capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
+            if j == cols-1:
+                ax.legend()
+        plt.tight_layout()
+        fig.savefig(charts_dir + 'KCov_CommRange-variable_CamObjRatio-'+str(simRatio)+'.pdf')
+        plt.close(fig)
     
     """""""""""""""""""""""""""
         single algos kcov
     """""""""""""""""""""""""""
-    fig = plt.figure(figsize=(7,7))
     
-    for idx,algo in enumerate(algos):
-        ax = fig.add_subplot(3,3,idx+1)
-        ax.set_ylim([0,1])
-        ax.set_xlim([max(simRatios) + 0.1, min(simRatios) - 0.1])
-        if idx == 3:
-            ax.set_ylabel("Coverage (%)")
-        if idx < 3:
-            ax.set_title("Cam/Obj Ratio")
-        if idx%3 > 0:
-            ax.set_yticklabels([])
-        ax.set_xlabel(algo)
-        ax.set_xticks([1.1] + simRatios + [0])
-        ax.set_xticklabels([""] + simRatios + [""])
-        if idx < 6:
-            ax.set_xticklabels([])
-        chartdataMean = dataFullyKcovsMean.sel(Algorithm=algo)
-        chartdataStd = dataFullyKcovsStd.sel(Algorithm=algo)
-        #xax = np.linspace(min(simRatios),max(simRatios),len(simRatios))
-        for i,s in enumerate(kcovVariables):
-            values = chartdataMean[s].values.tolist()
-            values.reverse()
-            errors = chartdataStd[s].values.tolist()
-            errors.reverse()
-            ax.plot(simRatios, values, label=kcovTrans[i], color=kcovColors[i])
-            for j,r in enumerate(simRatios):
-                ax.errorbar(r, values[j], yerr=errors[j], fmt='.', color=kcovEcolors[i], capsize=4)
-        if idx == 1:
-            ax.legend()
-    plt.tight_layout()
-    fig.savefig(charts_dir + 'ctratioall.pdf')
+    simRatios.reverse()
+    commRanges.reverse()
+    for commRange in commRanges:
+        fig = plt.figure(figsize=(18,8))
+        for idx,algo in enumerate(algos):
+            #size = ceil(sqrt(len(algos)))
+            rows = 2
+            cols = 4
+            ax = fig.add_subplot(rows,cols,idx+1)
+            ax.set_ylim([0,1])
+            ax.set_xlim([min(simRatios) - 0.1, max(simRatios) + 0.1])
+            if idx%cols == 0:
+                ax.set_ylabel("Coverage (%)")
+            if idx < cols:
+                ax.set_title("Cam/Obj Ratio")
+            if idx%rows != 0:
+                ax.set_yticklabels([])
+            ax.set_xlabel(algo)
+            ax.set_xticks([0] + simRatios + [1.1])
+            ax.set_xticklabels([""] + simRatios + [""])
+            #if idx < 6:
+            #    ax.set_xticklabels([])
+            chartdataMean = dataKcovsMean.sel(Algorithm=algo, CommunicationRange=commRange)
+            chartdataStd = dataKcovsStd.sel(Algorithm=algo, CommunicationRange=commRange)
+            #xax = np.linspace(min(simRatios),max(simRatios),len(simRatios))
+            for i,s in enumerate(kcovVariables):
+                values = chartdataMean[s].values.tolist()
+                #values.reverse()
+                errors = chartdataStd[s].values.tolist()
+                #.reverse()
+                ax.plot(simRatios, values, label=kcovTrans[i], color=kcovColors[i])
+                for j,r in enumerate(simRatios):
+                    ax.errorbar(r, values[j], yerr=errors[j], fmt='.', color=kcovEcolors[i], capsize=4)
+            if idx == cols-1:
+                ax.legend()
+        plt.tight_layout()
+        fig.savefig(charts_dir + 'KCov_lines_CommRange-'+str(commRange)+'_CamObjRatio-variable.pdf')
+        plt.close(fig)
     
-    """""""""""""""""""""""""""""""""
-        limited connection range
-    """""""""""""""""""""""""""""""""
+    
+    for simRatio in simRatios:
+        fig = plt.figure(figsize=(18,8))
+        for idx,algo in enumerate(algos):
+            #size = ceil(sqrt(len(algos)))
+            rows = 2
+            cols = 4
+            ax = fig.add_subplot(rows,cols,idx+1)
+            minRange = min(commRanges) - 10
+            maxRange = max(commRanges) + 10
+            ax.set_ylim([0,1])
+            ax.set_xlim([minRange, maxRange])
+            if idx%cols == 0:
+                ax.set_ylabel("Coverage (%)")
+            if idx < cols:
+                ax.set_title("CommRange")
+            if idx%rows != 0:
+                ax.set_yticklabels([])
+            ax.set_xlabel(algo)
+            ax.set_xticks([minRange] + commRanges + [maxRange])
+            ax.set_xticklabels([""] + [str(round(c)) for c in commRanges] + [""])
+            chartdataMean = dataKcovsMean.sel(Algorithm=algo, CamObjRatio=simRatio)
+            chartdataStd = dataKcovsStd.sel(Algorithm=algo, CamObjRatio=simRatio)
+            for i,s in enumerate(kcovVariables):
+                values = chartdataMean[s].values.tolist()
+                errors = chartdataStd[s].values.tolist()
+                ax.plot(commRanges, values, label=kcovTrans[i], color=kcovColors[i])
+                for j,r in enumerate(commRanges):
+                    ax.errorbar(r, values[j], yerr=errors[j], fmt='.', color=kcovEcolors[i], capsize=4)
+            if idx == cols-1:
+                ax.legend()
+        plt.tight_layout()
+        fig.savefig(charts_dir + 'KCov_lines_CommRange-variable_CamObjRatio-'+str(simRatio)+'.pdf')
+        plt.close(fig)
 
         
         
