@@ -7,7 +7,7 @@ variables:
     parameters: [1, 1, 20, 1]
   Algorithm: &Algorithm
     type: ListOf
-    parameters: ["zz_linpro", "nocomm", "ff_nocomm", "bc_re", "sm_av", "ff_linpro"]
+    parameters: ["nocomm", "nocomm", "ff_nocomm", "bc_re", "sm_av", "ff_linpro"]
   MaxCamerasPerTarget: &MaxCamerasPerTarget
     formula: 3
   CameraSpeed: &CameraSpeed
@@ -16,14 +16,11 @@ variables:
   HumanSpeed: &HumanSpeed
     type: ArbitraryVariable
     parameters: [1.4]
-  HumanDensity: &HumanDensity
-    type: ArbitraryVariable
-    parameters: [0.2] #potential targets per square meter
   HumansCamerasRatio: &HumansCamerasRatio
     type: ListOf
-    parameters: [1, 0.5, 0.25, 0.1]
+    parameters: [0.5, 0.25, 0.1]
   NumHumans: &NumHumans
-    formula: EnvironmentSize * HumanDensity
+    formula: 40
   NumCameras: &NumCameras
     formula: NumHumans * HumansCamerasRatio
   EnvironmentSize: &EnvironmentSize
@@ -33,8 +30,9 @@ variables:
     formula: EnvironmentSize / 2
   NegHalfEnvironmentSize: &NegHalfEnvironmentSize # needed for calculations
     formula: -HalfEnvironmentSize
-  NetworkConnectionMaxDistance: &NetworkConnectionMaxDistance
-    formula: EnvironmentSize * EnvironmentSize
+  CommunicationRange: &CommunicationRange
+    type: ArbitraryVariable
+    parameters: [200]
   FoVAngle: &FoVAngle
     type: ArbitraryVariable
     parameters: [60]
@@ -52,14 +50,12 @@ variables:
     parameters: [0.05]
 
 environment:
-  type: Rectangular2DEnvironment
-  parameters: [*EnvironmentSize, *EnvironmentSize]
+  type: SmartcamEnvironment
+  parameters: [*EnvironmentSize, *EnvironmentSize, vision]
 
 network-model:
-  type: FullyConnected
-  parameters: []
-#  type: ConnectWithinDistance
-#  parameters: [*NetworkConnectionMaxDistance]
+  type: ConnectWithinDistance
+  parameters: [*CommunicationRange]
 
 seeds:
   scenario: *Seed
@@ -69,6 +65,8 @@ export:
   - time
   - type: CamerasKCoverage
     parameters: [vision, wanted, *MaxCamerasPerTarget]
+  - type: DistanceTraveled
+    parameters: []
 
 programs:
   - &Human
@@ -145,6 +143,10 @@ displacements:
         concentration: *CameraSpeed
       - molecule: MaxRotationSpeed
         concentration: *RotationSpeed
+      - molecule: noAttractiveForces
+        concentration: true
+      - molecule: CommRange
+        concentration: *CommunicationRange
     programs:
       - *Camera
 
