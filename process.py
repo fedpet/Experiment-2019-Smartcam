@@ -256,6 +256,10 @@ if __name__ == '__main__':
     dataKcovsMean = dataMean.mean('Seed')
     dataKcovsStd = dataMean.std('Seed')
     
+    dataDist = data.sum('time').assign(MovEfficiency = lambda d: d.ObjDist / d.CamDist)
+    dataDistMean = dataDist.mean('Seed')
+    dataDistStd = dataDist.std('Seed')
+    
     simRatios = data.coords['CamObjRatio'].data.tolist()
     simRatios.reverse()
     commRanges = data.coords['CommunicationRange'].data.tolist()
@@ -393,5 +397,36 @@ if __name__ == '__main__':
         fig.savefig(charts_dir + 'KCov_lines_CommRange-variable_CamObjRatio-'+str(simRatio)+'.pdf')
         plt.close(fig)
 
-        
+    
+    """""""""""""""""""""""""""
+        distance traveled
+    """""""""""""""""""""""""""
+    chartDataMean = dataDistMean.sel(CamObjRatio=1)
+    chartDataStd = dataDistStd.sel(CamObjRatio=1)
+    
+    for r,commRange in enumerate(commRanges):
+        fig = plt.figure(figsize=(6,6))
+        ax = fig.add_subplot(1, 1, 1)
+        ax.set_ylim([0,1])
+        #if j<size:
+        ax.set_title("Cam/Obj Ratio = {0:.1f}".format(simRatio))
+        if j%cols == 0:
+            ax.set_ylabel("MovEfficiency (%)")
+        plt.xticks(rotation=35, ha='right')
+        ax.yaxis.grid(True)
+
+        #for i,s in enumerate(kcovVariables):
+        values = [chartDataMean.MovEfficiency.sel(Algorithm=algoname, CommunicationRange=commRange).values.tolist() for algoname in algos]
+        errors = [chartDataStd.MovEfficiency.sel(Algorithm=algoname, CommunicationRange=commRange).values.tolist() for algoname in algos]
+        ax.bar(algos, values, yerr=errors, capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
+
+        plt.tight_layout()
+        fig.savefig(charts_dir + 'MovEfficiency_CommRange-'+str(commRange)+'.pdf')
+        plt.close(fig)
+    
+    
+    
+    
+    
+    
         
