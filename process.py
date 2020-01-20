@@ -160,7 +160,7 @@ if __name__ == '__main__':
         lastTimeProcessed = pickle.load(open('timeprocessed', 'rb'))
     except:
         lastTimeProcessed = -1
-    shouldRecompute = newestFileTime != lastTimeProcessed
+    shouldRecompute = False#newestFileTime != lastTimeProcessed
     datasets = dict()
     if not shouldRecompute:
         try:
@@ -241,6 +241,8 @@ if __name__ == '__main__':
     import matplotlib
     import matplotlib.pyplot as plt
     import matplotlib.cm as cmx
+    from mpl_toolkits.mplot3d import Axes3D # needed for 3d projection
+    from mpl_toolkits.mplot3d.art3d import Poly3DCollection
     figure_size=(6, 6)
     matplotlib.rcParams.update({'axes.titlesize': 13})
     matplotlib.rcParams.update({'axes.labelsize': 12})
@@ -252,6 +254,10 @@ if __name__ == '__main__':
     algos = ['ff_linpro', 'zz_linpro','ff_linproF', 'zz_linproF', 'ff_nocomm', 'nocomm', 'sm_av', 'bc_re']#data.coords['Algorithm'].data.tolist()
     
     data = datasets['simulations']
+    # now load data from previous simulations
+    oldData = pickle.load(open('data_summary_datasets_20200106', 'rb'))['simulations']
+    data = xr.combine_by_coords([data, oldData])
+    
     dataMean = data.mean('time')
     dataKcovsMean = dataMean.mean('Seed')
     dataKcovsStd = dataMean.std('Seed')
@@ -265,14 +271,90 @@ if __name__ == '__main__':
     commRanges = data.coords['CommunicationRange'].data.tolist()
     commRanges.reverse()
     """""""""""""""""""""""""""
+                kcov 3D
+    """""""""""""""""""""""""""
+    def getSurfData(dataarray, xcord, ycord):
+        xs = []
+        ys = []
+        zs = []
+        for xd in dataarray:
+            for yd in xd:
+                xs.append(xd[xcord].values.tolist())
+                ys.append(yd[ycord].values.tolist())
+                zs.append(yd.values.tolist())
+        return xs, ys, zs
+        
+    fig = plt.figure(figsize=(12,20))
+    for idx, algo in enumerate(algos):
+        cols = 2
+        rows = ceil(len(algos) / 2)
+        ax = fig.add_subplot(rows,cols,idx+1, projection='3d')
+        
+        # Make data.
+        #X = commRanges
+        #Y = simRatios
+        #X, Y = np.meshgrid(X, Y)
+
+        ax.set_xlabel("CommRange")
+        ax.set_ylabel("Cam/Obj")
+        #if idx%cols == cols-1:
+        ax.set_zlabel("Coverage (%)")
+        #else:
+        #    ax.set_zticklabels([])
+        ax.set_xlim([max(commRanges),min(commRanges)])
+        ax.set_ylim([min(simRatios),max(simRatios)])
+        ax.set_zlim([0,1])
+        ax.set_title(algo)
+        
+        fakeLinesForLegend = []
+        def kcov(whichKCov,x,y):
+            return dataKcovsMean[whichKCov].sel(Algorithm=algo, CamObjRatio=y, CommunicationRange=x).values.tolist()#[0]
+        forKcovVars = [kcovVariables[0], kcovVariables[-1]]
+        forKcovTrans = []
+        for k, whichKCov in enumerate(kcovVariables):
+            if not whichKCov in forKcovVars:
+                continue
+            #zs = np.array(kcov(whichKCov, commRanges, simRatios))
+            #Z = zs.reshape(X.shape)
+            
+            x,y,z = getSurfData(dataKcovsMean[whichKCov].sel(Algorithm=algo), 'CommunicationRange', 'CamObjRatio')
+            ax.plot_trisurf(x,y,z, linewidth=2, antialiased=False, shade=True, alpha=0.5, color=kcovColors[k])
+            #ax.plot_surface(X, Y, Z, linewidth=2, rstride=2, cstride=2, antialiased=False, shade=True, alpha=0.5, color=kcovColors[k])
+            #ax.plot_wireframe(X, Y, Z, linewidth=2, rstride=2, cstride=2, antialiased=False, color=kcovColors[k])
+            fakeLinesForLegend.append(matplotlib.lines.Line2D([0],[0], linestyle='none', c=kcovColors[k], marker='o'))
+            forKcovTrans.append(kcovTrans[k])
+        """
+        top1 = [min(commRanges), min(simRatios), 0]
+        top2 = [max(commRanges), min(simRatios), 0]
+        top3 = [max(commRanges), min(simRatios), kcov('1-coverage',max(commRanges), min(simRatios))]
+        #top4 = [min(commRanges), min(simRatios), kcov(max(commRanges), max(simRatios))]
+        vertices = [top1, top2, top3]
+        for cr in commRanges:
+            vertices.append([cr, min(simRatios), kcov('1-coverage',cr, min(simRatios))])
+        print(algo)
+        print(vertices)
+        pols = Poly3DCollection([vertices])
+        pols.set_facecolor(kcovColors[0])
+        pols.set_edgecolor(kcovColors[0])
+        ax.add_collection3d(pols)
+        """
+        if idx == cols-1:
+            ax.legend(fakeLinesForLegend, forKcovTrans, numpoints=1)
+        
+    plt.tight_layout()
+    fig.savefig(charts_dir + 'KCov_3D.pdf', bbox_inches = 'tight', pad_inches = 0)
+    plt.close(fig)
+    exit()
+    
+    """""""""""""""""""""""""""
         kcoverage comparison
     """""""""""""""""""""""""""
     for r,commRange in enumerate(commRanges):
-        fig = plt.figure(figsize=(22,10))
+        fig = plt.figure(figsize=(22,20))
         for j,simRatio in enumerate(simRatios):
             # rows, columns, index
             #size = ceil(sqrt(len(simRatios)))
-            rows = 2#size-1
+            rows = 4#size-1
             cols = 5#size
             ax = fig.add_subplot(rows, cols,j+1)
             ax.set_ylim([0,1])
@@ -337,11 +419,11 @@ if __name__ == '__main__':
             if idx%cols == 0:
                 ax.set_ylabel("Coverage (%)")
             if idx < cols:
-                ax.set_title("Cam/Obj Ratio")
+                ax.set_xlabel("Cam/Obj Ratio")
             if idx%rows != 0:
                 ax.set_yticklabels([])
-            ax.set_xlabel(algo)
-            ax.set_xticks([0] + simRatios + [1.1])
+            ax.set_title(algo)
+            ax.set_xticks([0] + simRatios + [max(simRatios) + 0.1])
             ax.set_xticklabels([""] + simRatios + [""])
             #if idx < 6:
             #    ax.set_xticklabels([])
@@ -377,10 +459,10 @@ if __name__ == '__main__':
             if idx%cols == 0:
                 ax.set_ylabel("Coverage (%)")
             if idx < cols:
-                ax.set_title("CommRange")
+                ax.set_xlabel("CommRange")
             if idx%rows != 0:
                 ax.set_yticklabels([])
-            ax.set_xlabel(algo)
+            ax.set_title(algo)
             ax.set_xticks([minRange] + commRanges + [maxRange])
             ax.set_xticklabels([""] + [str(round(c)) for c in commRanges] + [""])
             chartdataMean = dataKcovsMean.sel(Algorithm=algo, CamObjRatio=simRatio)
@@ -404,12 +486,13 @@ if __name__ == '__main__':
     chartDataMean = dataDistMean.sel(CamObjRatio=1)
     chartDataStd = dataDistStd.sel(CamObjRatio=1)
     
+    simRatio = 1
     for r,commRange in enumerate(commRanges):
         fig = plt.figure(figsize=(6,6))
         ax = fig.add_subplot(1, 1, 1)
         ax.set_ylim([0,1])
         #if j<size:
-        ax.set_title("Cam/Obj Ratio = {0:.1f}".format(simRatio))
+        #ax.set_title("Cam/Obj Ratio = {0:.1f}".format(simRatio))
         if j%cols == 0:
             ax.set_ylabel("MovEfficiency (%)")
         plt.xticks(rotation=35, ha='right')
@@ -421,7 +504,7 @@ if __name__ == '__main__':
         ax.bar(algos, values, yerr=errors, capsize=4, color=kcovColors[i], ecolor=kcovEcolors[i])
 
         plt.tight_layout()
-        fig.savefig(charts_dir + 'MovEfficiency_CommRange-'+str(commRange)+'.pdf')
+        fig.savefig(charts_dir + 'MovEfficiency_CamObjRatio-'+str(simRatio)+'_CommRange-'+str(commRange)+'.pdf')
         plt.close(fig)
     
     
