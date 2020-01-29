@@ -1,4 +1,5 @@
 #!/bin/bash
+git checkout data
 for file in data/*
   do LASTLINE="$(tail -n 1 $file)"
   if [ "${LASTLINE:0:1}" == "#" ]
