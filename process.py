@@ -160,7 +160,7 @@ if __name__ == '__main__':
         lastTimeProcessed = pickle.load(open('timeprocessed', 'rb'))
     except:
         lastTimeProcessed = -1
-    shouldRecompute = newestFileTime != lastTimeProcessed
+    shouldRecompute = False#newestFileTime != lastTimeProcessed
     datasets = dict()
     if not shouldRecompute:
         try:
@@ -255,8 +255,13 @@ if __name__ == '__main__':
     
     data = datasets['simulations']
     # now load data from previous simulations
-    oldData = pickle.load(open('data_summary_datasets_20200106', 'rb'))['simulations']
-    data = xr.combine_by_coords([data, oldData])
+    #print("loading old data...")
+    #oldData = pickle.load(open('data_summary_datasets_20200106', 'rb'))['simulations']
+    #print("merging data...")
+    #data = xr.combine_by_coords([data, oldData])
+    #print("generating charts...")
+    #mergedDatasets = {'simulations': data}
+    #pickle.dump(mergedDatasets, open(pickleOutput + '_datasets_merged', 'wb'), protocol=-1)
     
     dataMean = data.mean('time')
     dataKcovsMean = dataMean.mean('Seed')
@@ -271,6 +276,8 @@ if __name__ == '__main__':
     commRanges = data.coords['CommunicationRange'].data.tolist()
     commRanges.reverse()
     
+    def noOdds(lst): # replaces odds numbers in lst with empty strings
+        return list(map(lambda x: x if round(x * 10, 0) % 2 == 0 else '', lst))
     """""""""""""""""""""""""""
           kcov in time
     """""""""""""""""""""""""""
@@ -283,7 +290,7 @@ if __name__ == '__main__':
     for whichKCov in selKcov:
         rows = 2
         cols = 2
-        fig, axes = plt.subplots(rows, cols, figsize=(12,10), sharex='col', sharey='row')
+        fig, axes = plt.subplots(rows, cols, figsize=(4,5), sharex='col', sharey='row')
         for idx, whichRatio in enumerate(selRatios):
             r = int(idx / cols)
             c = int(idx % cols)
@@ -303,12 +310,10 @@ if __name__ == '__main__':
                 axes[r][c].legend(ydata.coords['Algorithm'].data.tolist())
         fig.savefig(charts_dir + whichKCov + '_InTime_.pdf')
         plt.close(fig)
-    
+        
     """""""""""""""""""""""""""
               heatmaps
     """""""""""""""""""""""""""
-    def noOdds(lst):
-        return list(map(lambda x: x if round(x * 10, 0) % 2 == 0 else '', lst))
     simRatios.reverse()
     commRanges.reverse()
     import seaborn as sns
@@ -316,7 +321,7 @@ if __name__ == '__main__':
     cols = 2
     gridspec_kw={'width_ratios': [1,1,0.1], 'height_ratios': [1,1,1,1]}
     for whichKCov in kcovVariables:
-        fig, axes = plt.subplots(rows, cols+1, figsize=(12,20), sharex='col', gridspec_kw=gridspec_kw)
+        fig, axes = plt.subplots(rows, cols+1, figsize=(8,10), sharex='col', gridspec_kw=gridspec_kw)
         plt.xlim([min(simRatios), max(simRatios)])
         plt.ylim([0,1])
         for idx,algo in enumerate(algos):
@@ -347,7 +352,7 @@ if __name__ == '__main__':
     simRatios.reverse()
     commRanges.reverse()
     for commRange in commRanges:
-        fig = plt.figure(figsize=(12,20))
+        fig = plt.figure(figsize=(8,10))
         for idx,algo in enumerate(algos):
             #size = ceil(sqrt(len(algos)))
             rows = 4
@@ -379,16 +384,16 @@ if __name__ == '__main__':
                 #.reverse()
                 ax.plot(simRatios, values, label=kcovTrans[i], color=kcovColors[i])
                 for j,r in enumerate(simRatios):
-                    ax.errorbar(r, values[j], yerr=errors[j], fmt='.', color=kcovEcolors[i], capsize=4)
+                    ax.errorbar(r, values[j], yerr=errors[j], fmt='', color=kcovColors[i], elinewidth=1, capsize=0)
             if idx == cols-1:
                 ax.legend()
         plt.tight_layout()
-        fig.savefig(charts_dir + 'KCov_lines_CommRange-'+str(commRange)+'_CamObjRatio-variable.pdf')
+        fig.savefig(charts_dir + 'KCov_lines_CommRange-'+str(int(commRange))+'_CamObjRatio-variable.pdf')
         plt.close(fig)
     
     
     for simRatio in simRatios:
-        fig = plt.figure(figsize=(12,20))
+        fig = plt.figure(figsize=(8,10))
         for idx,algo in enumerate(algos):
             #size = ceil(sqrt(len(algos)))
             rows = 4
@@ -415,7 +420,7 @@ if __name__ == '__main__':
                 errors = chartdataStd[s].values.tolist()
                 ax.plot(commRanges, values, label=kcovTrans[i], color=kcovColors[i])
                 for j,r in enumerate(commRanges):
-                    ax.errorbar(r, values[j], yerr=errors[j], fmt='.', color=kcovEcolors[i], capsize=4)
+                    ax.errorbar(r, values[j], yerr=errors[j], fmt='', color=kcovColors[i], elinewidth=1, capsize=0)
             if idx == cols-1:
                 ax.legend()
         plt.tight_layout()
@@ -424,10 +429,14 @@ if __name__ == '__main__':
         
     simRatios.reverse()
     commRanges.reverse()
+    exit()
     
     """""""""""""""""""""""""""
                 kcov 3D
     """""""""""""""""""""""""""
+    oldParams = matplotlib.rcParams.copy()
+    matplotlib.rcParams.update({'axes.titlesize': 25})
+    matplotlib.rcParams.update({'axes.labelsize': 22})
     def getSurfData(dataarray, xcord, ycord):
         xs = []
         ys = []
@@ -439,7 +448,7 @@ if __name__ == '__main__':
                 zs.append(yd.values.tolist())
         return xs, ys, zs
         
-    fig = plt.figure(figsize=(12,20))
+    fig = plt.figure(figsize=(3,5)) # seems like figsize is ignored
     for idx, algo in enumerate(algos):
         cols = 2
         rows = ceil(len(algos) / 2)
@@ -474,6 +483,8 @@ if __name__ == '__main__':
     plt.tight_layout()
     fig.savefig(charts_dir + 'KCov_3D.pdf', bbox_inches = 'tight', pad_inches = 0)
     plt.close(fig)
+    matplotlib.rcParams.update(oldParams)
+    exit()
     
     """""""""""""""""""""""""""
         LaTeX table
