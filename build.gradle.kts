@@ -51,7 +51,7 @@ fun makeTest(
     file: String,
     name: String = file,
     effects: String? = "smartcam.aes",
-    sampling: Double = 1.0,
+    sampling: Double = 2.0,
     time: Double = Double.POSITIVE_INFINITY,
     vars: Set<String> = setOf(),
     maxHeap: Long? = null,
@@ -118,7 +118,7 @@ makeTest("showcase_ff_linpro_generic", effects="presentation.aes")
 makeTest("fully_connected", name="launchGUI")
 
 // simulations used for the performances evaluation
-makeTest("simulations", time = 2000.0, vars = setOf("Seed", "Algorithm", "CamObjRatio", "CommunicationRange"))
+makeTest("simulations", time = 600.0, vars = setOf("Seed", "Algorithm", "CamObjRatio", "CommunicationRange"))
 makeTest("simulations", name="simgui")
 //makeTest("fully_connected", time = 2000.0, vars = setOf("Seed", "Algorithm", "HumansCamerasRatio"))
 //makeTest("limited_connection_range", time = 2000.0, vars = setOf("Seed", "Algorithm", "ConnectionRange"))

@@ -160,7 +160,7 @@ if __name__ == '__main__':
         lastTimeProcessed = pickle.load(open('timeprocessed', 'rb'))
     except:
         lastTimeProcessed = -1
-    shouldRecompute = False#newestFileTime != lastTimeProcessed
+    shouldRecompute = newestFileTime != lastTimeProcessed
     datasets = dict()
     if not shouldRecompute:
         try:
@@ -278,19 +278,77 @@ if __name__ == '__main__':
     
     def noOdds(lst): # replaces odds numbers in lst with empty strings
         return list(map(lambda x: x if round(x * 10, 0) % 2 == 0 else '', lst))
+    
+    """""""""""""""""""""""""""
+                kcov 3D
+    """""""""""""""""""""""""""
+    #oldParams = matplotlib.rcParams.copy()
+    #labelsize = 22
+    #titlesize = 25
+    #matplotlib.rcParams.update({'axes.titlesize': titlesize})
+    #matplotlib.rcParams.update({'axes.labelsize': labelsize})
+    def getSurfData(dataarray, xcord, ycord):
+        xs = []
+        ys = []
+        zs = []
+        for xd in dataarray:
+            for yd in xd:
+                xs.append(xd[xcord].values.tolist())
+                ys.append(yd[ycord].values.tolist())
+                zs.append(yd.values.tolist())
+        return xs, ys, zs
+        
+    fig = plt.figure(figsize=(12,16))
+    for idx, algo in enumerate(algos):
+        cols = 2
+        rows = ceil(len(algos) / 2)
+        ax = fig.add_subplot(rows,cols,idx+1, projection='3d')
+
+        #ax.tick_params(labelsize=labelsize)
+        ax.set_xlabel("r")
+        ax.set_ylabel("n/m")
+        if idx%cols == cols-1:
+            ax.set_zlabel("Coverage (%)")
+        #else:
+        #    ax.set_zticklabels([])
+        ax.set_xlim([max(commRanges),min(commRanges)])
+        ax.set_ylim([min(simRatios),max(simRatios)])
+        ax.set_zlim([0,1])
+        ax.set_title(algo)
+        
+        fakeLinesForLegend = []
+        def kcov(whichKCov,x,y):
+            return dataKcovsMean[whichKCov].sel(Algorithm=algo, CamObjRatio=y, CommunicationRange=x).values.tolist()#[0]
+        forKcovVars = [kcovVariables[0], kcovVariables[-1]]
+        forKcovTrans = []
+        for k, whichKCov in enumerate(kcovVariables):
+            if not whichKCov in forKcovVars:
+                continue
+            x,y,z = getSurfData(dataKcovsMean[whichKCov].sel(Algorithm=algo), 'CommunicationRange', 'CamObjRatio')
+            ax.plot_trisurf(x,y,z, linewidth=2, antialiased=False, shade=True, alpha=0.5, color=kcovColors[k])
+            fakeLinesForLegend.append(matplotlib.lines.Line2D([0],[0], linestyle='none', c=kcovColors[k], marker='o'))
+            forKcovTrans.append(kcovTrans[k])
+        if idx == cols-1:
+            ax.legend(fakeLinesForLegend, forKcovTrans, numpoints=1)
+        
+    plt.tight_layout()
+    fig.savefig(charts_dir + 'KCov_3D.pdf')
+    plt.close(fig)
+    #matplotlib.rcParams.update(oldParams)
+    
     """""""""""""""""""""""""""
           kcov in time
     """""""""""""""""""""""""""
     timeLimit = 100
     selAlgos = ['ff_linpro', 'zz_linpro', 'ff_nocomm', 'nocomm']
-    selRatios = ['0.3', '0.8', '1.2', '1.8']
+    selRatios = ['0.4', '0.8', '1.2', '1.8']
     selKcov = ['1-coverage', '3-coverage']
     selCommRange = 100
     dataInTime = data.mean('Seed')
     for whichKCov in selKcov:
         rows = 2
         cols = 2
-        fig, axes = plt.subplots(rows, cols, figsize=(4,5), sharex='col', sharey='row')
+        fig, axes = plt.subplots(rows, cols, figsize=(8,5), sharex='col', sharey='row')
         for idx, whichRatio in enumerate(selRatios):
             r = int(idx / cols)
             c = int(idx % cols)
@@ -308,7 +366,7 @@ if __name__ == '__main__':
                 axes[r][c].set_xlabel('t')
             if r == 0 and c == cols -1:
                 axes[r][c].legend(ydata.coords['Algorithm'].data.tolist())
-        fig.savefig(charts_dir + whichKCov + '_InTime_.pdf')
+        fig.savefig(charts_dir + whichKCov + '_InTime.pdf')
         plt.close(fig)
         
     """""""""""""""""""""""""""
@@ -319,7 +377,7 @@ if __name__ == '__main__':
     import seaborn as sns
     rows = 4
     cols = 2
-    gridspec_kw={'width_ratios': [1,1,0.1], 'height_ratios': [1,1,1,1]}
+    gridspec_kw={'width_ratios': [1,1,0.05], 'height_ratios': [1,1,1,1]}
     for whichKCov in kcovVariables:
         fig, axes = plt.subplots(rows, cols+1, figsize=(8,10), sharex='col', gridspec_kw=gridspec_kw)
         plt.xlim([min(simRatios), max(simRatios)])
@@ -329,7 +387,7 @@ if __name__ == '__main__':
             c = int(idx % cols)
             data = dataKcovsMean.sel(Algorithm=algo)[whichKCov]
             cbar = idx%cols == cols - 1 # only charts to the right have the bar
-            ax = sns.heatmap(data, vmin=0, vmax=1, ax=axes[r][c], cbar=cbar, cbar_ax=axes[r][cols])
+            ax = sns.heatmap(data, vmin=0, vmax=1, ax=axes[r][c], cbar=cbar, cbar_ax=axes[r][cols], cbar_kws={'label': whichKCov + ' (%)'})
             if idx%cols == 0:
                 ax.set_ylabel('r')
                 ax.set_yticklabels([str(int(x)) for x in commRanges])
@@ -429,62 +487,6 @@ if __name__ == '__main__':
         
     simRatios.reverse()
     commRanges.reverse()
-    exit()
-    
-    """""""""""""""""""""""""""
-                kcov 3D
-    """""""""""""""""""""""""""
-    oldParams = matplotlib.rcParams.copy()
-    matplotlib.rcParams.update({'axes.titlesize': 25})
-    matplotlib.rcParams.update({'axes.labelsize': 22})
-    def getSurfData(dataarray, xcord, ycord):
-        xs = []
-        ys = []
-        zs = []
-        for xd in dataarray:
-            for yd in xd:
-                xs.append(xd[xcord].values.tolist())
-                ys.append(yd[ycord].values.tolist())
-                zs.append(yd.values.tolist())
-        return xs, ys, zs
-        
-    fig = plt.figure(figsize=(3,5)) # seems like figsize is ignored
-    for idx, algo in enumerate(algos):
-        cols = 2
-        rows = ceil(len(algos) / 2)
-        ax = fig.add_subplot(rows,cols,idx+1, projection='3d')
-
-        ax.set_xlabel("r")
-        ax.set_ylabel("n/m")
-        #if idx%cols == cols-1:
-        ax.set_zlabel("Coverage (%)")
-        #else:
-        #    ax.set_zticklabels([])
-        ax.set_xlim([max(commRanges),min(commRanges)])
-        ax.set_ylim([min(simRatios),max(simRatios)])
-        ax.set_zlim([0,1])
-        ax.set_title(algo)
-        
-        fakeLinesForLegend = []
-        def kcov(whichKCov,x,y):
-            return dataKcovsMean[whichKCov].sel(Algorithm=algo, CamObjRatio=y, CommunicationRange=x).values.tolist()#[0]
-        forKcovVars = [kcovVariables[0], kcovVariables[-1]]
-        forKcovTrans = []
-        for k, whichKCov in enumerate(kcovVariables):
-            if not whichKCov in forKcovVars:
-                continue
-            x,y,z = getSurfData(dataKcovsMean[whichKCov].sel(Algorithm=algo), 'CommunicationRange', 'CamObjRatio')
-            ax.plot_trisurf(x,y,z, linewidth=2, antialiased=False, shade=True, alpha=0.5, color=kcovColors[k])
-            fakeLinesForLegend.append(matplotlib.lines.Line2D([0],[0], linestyle='none', c=kcovColors[k], marker='o'))
-            forKcovTrans.append(kcovTrans[k])
-        if idx == cols-1:
-            ax.legend(fakeLinesForLegend, forKcovTrans, numpoints=1)
-        
-    plt.tight_layout()
-    fig.savefig(charts_dir + 'KCov_3D.pdf', bbox_inches = 'tight', pad_inches = 0)
-    plt.close(fig)
-    matplotlib.rcParams.update(oldParams)
-    exit()
     
     """""""""""""""""""""""""""
         LaTeX table
@@ -492,16 +494,16 @@ if __name__ == '__main__':
     import textwrap
     selKcov = '3-coverage'
     selCommRanges = [25, 50, 100]
-    selRatios = [0.2, 0.5, 1, 1.2, 1.5, 2]
+    selRatios = [0.2, 0.6, 1, 1.2, 1.6, 2]
     txt = r'''
     \begin{table}
         \centering
-        \footnotesize
+        \tiny
         \begin{tabular}{lccccccc}%{lcccccccccccccccccccccccc}
 
         \toprule
-        \multirow{2}{*}{\textsc{Dist}} & \multirow{2}{*}{\textsc{Approach}} 
-        & \multicolumn{6}{c}{\textsc{Ratio}}\\
+        \multirow{2}{*}{$r$} & \multirow{2}{*}{\textsc{Approach}} 
+        & \multicolumn{6}{c}{\textsc{Ratio} $n/m$}\\
         \cline{3-8}
         & & ''' + '&'.join(['{:.1f}'.format(r) for r in selRatios]) + r'\\'
     for commRange in selCommRanges:
@@ -515,7 +517,9 @@ if __name__ == '__main__':
     txt += r'''
         \bottomrule
         \end{tabular}
-        \caption{ALTERNATIVE TABLE}
+        \caption{Comparison of mean $OMC_k$ achieved by different approaches with 
+        different communications ranges $r$ and different ratios for 
+        objects/cameras, standard deviation is indicated in brackets.}
         \label{tab:results}
     \end{table}
     '''
@@ -605,10 +609,3 @@ if __name__ == '__main__':
         plt.tight_layout()
         fig.savefig(charts_dir + 'MovEfficiency_CamObjRatio-'+str(simRatio)+'_CommRange-'+str(commRange)+'.pdf')
         plt.close(fig)
-    
-    
-    
-    
-    
-    
-        

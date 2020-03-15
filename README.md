@@ -12,7 +12,7 @@
 - [TODO](#todo)
 
 ## Problem
-- We have a set of mobile sensors (smartcameras) which can communicate and detect targets in their field of view.
+We have a set of mobile sensors (smartcameras) which can communicate and detect targets in their field of view. We must:
 - Cover an area in which there may be moving targets.
 - Maximize efficency and in particular the k-coverage. K-Coverage is reached for one target as long as it's being observed by at least K sensors.
 
@@ -20,7 +20,7 @@
 Here are proposed 2 approaches: LinPro and Force Field Exploration (FF). The algorithms are decentralized and self-adapting. They naturally supports adding and removing sensors and targets during runtime.
 Note: this project focuses on the *coordination*, security and vision related problems are not discussed.
 ### LinPro
-The problem is modeled with linear programming: it achieves k-coverage minimizing the movements.
+The problem is modeled with linear programming: it achieves k-coverage while minimizing the movements.
 
 LinPro requires that sensors know their own position in space, and that they can calculate the position of the targets detected. The positions must be coherent and in reference to a common positioning system.
 
@@ -36,7 +36,8 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 - The summation of the forces determine the direction of the camera. In this way the cameras tend to explore the arena homogeneously, while staying close to potential targets.
 
 
-## Links
+## References
+- [A Development and Simulation Framework for Decentralised k-Coverage in Situated Multi-Robot Systems](https://github.com/DanySK/Paper-2019-PMC-SmartCam) - The paper originated from this experiment
 - [My thesis](https://amslaurea.unibo.it/19092/) - Contains the formulation of LinPro and all the details. In italian because of bureocracy... Interesting things from chapter 3, page 22
 - [Online multi-object k-coverage with mobile smart cameras](https://doi.org/10.1145/3131885.3131909) - Contains the formal definition of k-coverage and some approaches for coordination algorithms
 - [Alchemist Simulator](https://github.com/AlchemistSimulator/Alchemist) - The simulator used in this experiment
@@ -44,7 +45,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 
 ## FF-LinPro showcase (LinPro with Force Field Exploration)
 ![Showcase of LinPro with Force Field Exploration](video1.gif)
-
+<!---
 ## Scenario of the simulations
 | Variable                              | Default Value         |
 |---------------------------------------|---------------|
@@ -66,6 +67,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 | Seed                                  | 1             |
 
 (*) Each object has 5% probability of becoming a target (red) every 20s. With the same strategy and probability it can stop being one (green).
+-->
 
 ![Scenario](video2.gif)
 
@@ -87,15 +89,21 @@ The charts show the percentage of the time during which k-coverage was achieved.
 
 
 ## Getting Started
+<!---
 I'm sorry, the code is a mess but finishing my thesis in time took the priority.
+-->
 
 Run `gradlew build` to compile.
 
 `gradlew showcase_ff_linpro_from_center`  and `gradlew showcase_ff_linpro_generic`
  to run the simulations shown during the presentation.
+
+`gradlew simulations` to run all the simulations used to produce the data shown in [the paper](https://github.com/DanySK/Paper-2019-PMC-SmartCam)
+
+`python process.py` to produce the charts.
  
 
-## TODO
+## TODO and notes
 - Clean the mess
   - ~~ZigZagMove2 should be fixed in newer versions of Alchemist, if not then make a pr~~
   - ~~Same for LevyWalk~~
