@@ -3,6 +3,7 @@
 - [Solution](#solution)
 - [Links](#links)
 - [FF-LinPro showcase (LinPro with Force Field Exploration)](#ff-linpro-showcase-linpro-with-force-field-exploration)
+- [References](#references)
 - [Scenario of the simulations](#scenario-of-the-simulations)
   * [Evaluated algorithms](#evaluated-algorithms)
 - [Results](#results)
