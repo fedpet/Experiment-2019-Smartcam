@@ -39,7 +39,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 
 
 ## References
-- [A Development and Simulation Framework for Decentralised k-Coverage in Situated Multi-Robot Systems](https://github.com/DanySK/Paper-2019-PMC-SmartCam) - The paper originated from this experiment, it contains formal descriptions of all the mentioned algorithms and all the details involved in this work.
+- [A Development and Simulation Framework for Decentralised k-Coverage in Situated Multi-Robot Systems](https://github.com/DanySK/Paper-2019-PMC-SmartCam) - The paper originated from this experiment, it contains formal descriptions of all the mentioned algorithms and all the details involved in this work. ([download from here](https://github.com/DanySK/Paper-2019-PMC-SmartCam/releases))
 - [My thesis](https://amslaurea.unibo.it/19092/) - Contains the formulation of LinPro and all the details. In italian because of bureocracy... Interesting things from chapter 3, page 22
 - [Online multi-object k-coverage with mobile smart cameras](https://doi.org/10.1145/3131885.3131909) - Contains the formal definition of k-coverage and some approaches for coordination algorithms
 - [Alchemist Simulator](https://github.com/AlchemistSimulator/Alchemist) - The simulator used in this experiment
