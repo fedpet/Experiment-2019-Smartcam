@@ -70,7 +70,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 | Seed                                  | 1             |
 
 (*) Each object has 5% probability of becoming a target (red) every 20s. With the same strategy and probability it can stop being one (green).
-
+-->
 ![Scenario](video2.gif)
 
 ### Evaluated algorithms
