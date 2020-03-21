@@ -84,6 +84,7 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 
 ## Results
 The charts show the percentage of the time during which k-coverage was achieved. Error bars indicate the standard deviations.
+[Link to all the charts](https://github.com/fedpet/Experiment-2019-Smartcam/tree/master/charts)
 ### By varying the cam-obj ratio
 ![Performance of the algorithms by varying the cam/obj ratio](chart_cam_obj_ratio.png)
 ### By varying the communication range
