@@ -3,6 +3,7 @@
 - [Solution](#solution)
 - [Links](#links)
 - [FF-LinPro showcase (LinPro with Force Field Exploration)](#ff-linpro-showcase-linpro-with-force-field-exploration)
+- [References](#references)
 - [Scenario of the simulations](#scenario-of-the-simulations)
   * [Evaluated algorithms](#evaluated-algorithms)
 - [Results](#results)
@@ -12,44 +13,46 @@
 - [TODO](#todo)
 
 ## Problem
-We have a set of mobile sensors (smartcameras) which can communicate and detect targets in their field of view. We must:
+We have a set of mobile sensors (smartcameras) which can communicate and detect targets in their field of view. Our objective is to:
 - Cover an area in which there may be moving targets.
-- Maximize efficency and in particular the k-coverage. K-Coverage is reached for one target as long as it's being observed by at least K sensors.
+- Maximize efficency and in particular the k-coverage. K-Coverage is reached for one target as long as it's being simultaneously observed by at least K sensors.
 
 ## Solution
 Here are proposed 2 approaches: LinPro and Force Field Exploration (FF). The algorithms are decentralized and self-adapting. They naturally supports adding and removing sensors and targets during runtime.
 Note: this project focuses on the *coordination*, security and vision related problems are not discussed.
 ### LinPro
-The problem is modeled with linear programming: it achieves k-coverage while minimizing the movements.
+This algorithm focuses on tracking targets and coordinating cameras to maximise performance.
+The problem is modeled with linear programming: it achieves k-coverage while minimising the movements.
 
 LinPro requires that sensors know their own position in space, and that they can calculate the position of the targets detected. The positions must be coherent and in reference to a common positioning system.
 
 Each camera executes a 1-hop broadcast of its position and the positions of the targets seen. With the received data it solves the problem and follows the target indicated by the optimal solution.
 
 ### Force Field Exploration
+This algorithm focuses on the coordinated exploration of the area.
 This approach is inspired by ["Cooperative Multi-robot Observation
 of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 
 - Each camera produces a virtual repulsive force field.
 - Each object (of which the position is known) produces a virtual attractive force field.
-- Each camera has a "force of will" which is used to prevent the balancing of the forces, which would otherwise result in a static situation.
+- Each camera has a "force of will" used to prevent the balancing of the forces, that would otherwise result in a static situation.
 - The summation of the forces determine the direction of the camera. In this way the cameras tend to explore the arena homogeneously, while staying close to potential targets.
 
 
 ## References
-- [A Development and Simulation Framework for Decentralised k-Coverage in Situated Multi-Robot Systems](https://github.com/DanySK/Paper-2019-PMC-SmartCam) - The paper originated from this experiment
+- [A Development and Simulation Framework for Decentralised k-Coverage in Situated Multi-Robot Systems](https://github.com/DanySK/Paper-2019-PMC-SmartCam) - The paper originated from this experiment, it contains formal descriptions of all the mentioned algorithms and all the details involved in this work. ([download from here](https://github.com/DanySK/Paper-2019-PMC-SmartCam/releases))
 - [My thesis](https://amslaurea.unibo.it/19092/) - Contains the formulation of LinPro and all the details. In italian because of bureocracy... Interesting things from chapter 3, page 22
 - [Online multi-object k-coverage with mobile smart cameras](https://doi.org/10.1145/3131885.3131909) - Contains the formal definition of k-coverage and some approaches for coordination algorithms
 - [Alchemist Simulator](https://github.com/AlchemistSimulator/Alchemist) - The simulator used in this experiment
 - [Protelis](http://protelis.github.io/) - The programming language based on "Aggregate Programming" used for the algorithms.
 
-## FF-LinPro showcase (LinPro with Force Field Exploration)
+## FF-LinPro showcase (combination of LinPro and Force Field Exploration)
 ![Showcase of LinPro with Force Field Exploration](video1.gif)
 <!---
 ## Scenario of the simulations
 | Variable                              | Default Value         |
 |---------------------------------------|---------------|
-| Duration of the simulation            | 2000 s        |
+| Duration of the simulation            | 600 s        |
 | Size of the arena                     | 500 x 500 m   |
 | Obj movement speed                    | 1.4 m/s       |
 | Obj movement strategy                 | Lévy Walk     |
@@ -68,7 +71,6 @@ of Multiple Moving Targets"](https://doi.org/10.1109/ROBOT.1997.619270).
 
 (*) Each object has 5% probability of becoming a target (red) every 20s. With the same strategy and probability it can stop being one (green).
 -->
-
 ![Scenario](video2.gif)
 
 ### Evaluated algorithms
