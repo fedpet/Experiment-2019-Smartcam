@@ -4,7 +4,7 @@ variables:
   Seed: &Seed
     type: LinearVariable
     #default, min, max, step
-    parameters: [1, 1, 100, 1]
+    parameters: [1, 73, 100, 1]
   Algorithm: &Algorithm
     type: ListOf
     parameters: ["zz_linpro", "ff_linpro", "zz_linproF", "ff_linproF", "ff_nocomm", "nocomm", "sm_av", "bc_re"]
@@ -149,3 +149,5 @@ displacements:
         concentration: *CommunicationRange
     programs:
       - *Camera
+
+

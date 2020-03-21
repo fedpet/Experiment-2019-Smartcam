@@ -609,3 +609,10 @@ if __name__ == '__main__':
         plt.tight_layout()
         fig.savefig(charts_dir + 'MovEfficiency_CamObjRatio-'+str(simRatio)+'_CommRange-'+str(commRange)+'.pdf')
         plt.close(fig)
+    
+    
+    
+    
+    
+    
+        
